@@ -10,10 +10,15 @@ repositories {
 	mavenCentral()
 }
 
-def runeLiteVersion = '1.7.5'
+def runeLiteVersion = '1.8.7.1'
 
 dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
+
+	compile 'com.googlecode.json-simple:json-simple:1.1.1'
+	compile group: 'commons-codec', name: 'commons-codec', version: '1.12'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.0'
+	compile 'org.jsoup:jsoup:1.13.1'
 
 	compileOnly 'org.projectlombok:lombok:1.18.20'
 	annotationProcessor 'org.projectlombok:lombok:1.18.20'
@@ -25,8 +30,9 @@ dependencies {
 
 group = 'com.example'
 version = '1.0-SNAPSHOT'
-sourceCompatibility = '1.8'
+sourceCompatibility = "11"
 
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
+targetCompatibility = JavaVersion.VERSION_11
