@@ -128,6 +128,10 @@ public class WikiScraper {
         if (row.length > 4) {
             imageUrl = row[0];
             name = row[1];
+            if(name.endsWith("(m)")) {
+                // (m) indicates members only, remove because it's not part of actual item name
+                name = name.substring(0, name.length() - 3);
+            }
 
             NumberFormat nf = NumberFormat.getNumberInstance();
 
@@ -140,6 +144,9 @@ public class WikiScraper {
 
 
             try {
+                if(rarityStr.startsWith("2 × ")) {
+                    rarityStr = rarityStr.substring(4);
+                }
                 String[] rarityStrs = rarityStr.replaceAll("\\s+", "").split(";");
                 String firstRarityStr = rarityStrs.length > 0 ? rarityStrs[0] : null;
 
@@ -174,18 +181,18 @@ public class WikiScraper {
     }
 
     public static String getWikiUrl(String itemOrMonsterName) {
-        String sanitizedName = sanitizeMonsterName(itemOrMonsterName);
+        String sanitizedName = sanitizeName(itemOrMonsterName);
         return baseWikiUrl + sanitizedName;
     }
 
     public static String getWikiUrlForDrops(String monsterName) {
-        String sanitizedMonsterName = sanitizeMonsterName(monsterName);
+        String sanitizedMonsterName = sanitizeName(monsterName);
         return baseWikiUrl + sanitizedMonsterName + "#Drops";
     }
 
-    public static String sanitizeMonsterName(String monsterName) {
-        monsterName = monsterName.strip().toLowerCase().replaceAll("\\s+", "_");
-        return monsterName.substring(0, 1).toUpperCase() + monsterName.substring(1);
+    public static String sanitizeName(String name) {
+        name = name.strip().toLowerCase().replaceAll("\\s+", "_");
+        return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
 
     private static CompletableFuture<String> requestAsync(String url) {

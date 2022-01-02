@@ -8,6 +8,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.function.Consumer;
 
 public class Util {
@@ -28,6 +30,18 @@ public class Util {
         }
     }
 
+    public static BufferedImage resizeImg(BufferedImage img, int newW, int newH) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        BufferedImage dimg = new BufferedImage(newW, newH, img.getType());
+        Graphics2D g = dimg.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g.drawImage(img, 0, 0, newW, newH, 0, 0, w, h, null);
+        g.dispose();
+        return dimg;
+    }
+
     public static void showHandCursorOnHover(Component component) {
         component.addMouseListener(new MouseAdapter() {
             @Override
@@ -42,10 +56,26 @@ public class Util {
         });
     }
 
+    public static String colorToHex(Color color) {
+        return "#"+Integer.toHexString(color.getRGB()).substring(2);
+    }
+
+    public static String rsFormat(double number) {
+        int power;
+        String suffix = " KMBT";
+        String formattedNumber = "";
+
+        NumberFormat formatter = new DecimalFormat("#,###.#");
+        power = (int) StrictMath.log10(number);
+        number = number / (Math.pow(10, (power / 3) * 3));
+        formattedNumber = formatter.format(number);
+        formattedNumber = formattedNumber + suffix.charAt(power / 3);
+        return formattedNumber.length() > 4 ? formattedNumber.replaceAll("\\.[0-9]+", "") : formattedNumber;
+    }
+
     public static String toPercentage(double n, int digits) {
         return String.format("%." + digits + "f", n * 100) + "%";
     }
-
 
     public static String convertDecimalToFraction(double x) {
         if (x < 0) {

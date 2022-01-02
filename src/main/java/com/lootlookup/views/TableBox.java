@@ -10,6 +10,7 @@ import net.runelite.client.util.SwingUtil;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
+import javax.swing.text.View;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -23,22 +24,27 @@ public class TableBox extends JPanel {
     private LootLookupConfig config;
 
     private WikiItem[] items;
+    private ViewOption viewOption;
     private DropTableType headerStr;
+    private JButton percentBtn;
 
-    JButton collapseBtn = new JButton();
-    JPanel itemsContainer = new JPanel();
-    JPanel headerContainer = new JPanel();
-    JPanel leftHeader = new JPanel();
+    private final JButton collapseBtn = new JButton();
+    private final JPanel listViewContainer = new JPanel();
+    private JPanel gridViewPanel = new JPanel();
+    private final JPanel headerContainer = new JPanel();
+    private final JPanel leftHeader = new JPanel();
 
     private final Color HEADER_BG_COLOR = ColorScheme.DARKER_GRAY_COLOR.darker();
     private final Color HOVER_COLOR = ColorScheme.DARKER_GRAY_HOVER_COLOR.darker();
 
     private final List<WikiItemPanel> itemPanels = new ArrayList<>();
 
-    public TableBox(DropTableType headerStr, WikiItem[] items, LootLookupConfig config) {
+    public TableBox(LootLookupConfig config, WikiItem[] items, ViewOption viewOption, DropTableType headerStr, JButton percentButton) {
         this.config = config;
         this.items = items;
         this.headerStr = headerStr;
+        this.viewOption = viewOption;
+        this.percentBtn = percentButton;
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -58,16 +64,16 @@ public class TableBox extends JPanel {
         headerLabel.setForeground(ColorScheme.BRAND_ORANGE);
         headerLabel.setHorizontalAlignment(JLabel.CENTER);
 
-
         leftHeader.setLayout(new BoxLayout(leftHeader, BoxLayout.X_AXIS));
         leftHeader.setBackground(HEADER_BG_COLOR);
 
         buildCollapseBtn();
 
-        leftHeader.add(Box.createRigidArea(new Dimension(5, 0)));
-        leftHeader.add(collapseBtn);
-        leftHeader.add(Box.createRigidArea(new Dimension(10, 0)));
-        leftHeader.add(headerLabel);
+         leftHeader.add(Box.createRigidArea(new Dimension(5, 0)));
+         leftHeader.add(collapseBtn);
+         leftHeader.add(Box.createRigidArea(new Dimension(10, 0)));
+         leftHeader.add(headerLabel);
+
     }
 
     void buildCollapseBtn() {
@@ -115,30 +121,41 @@ public class TableBox extends JPanel {
     }
 
     void buildItemsContainer() {
-        int i = 0;
-        for (WikiItem item : items) {
-            WikiItemPanel itemPanel = new WikiItemPanel(item, i > 0, false, config);
-            itemPanels.add(itemPanel);
-            itemsContainer.add(itemPanel);
-            i++;
-        }
+        switch(viewOption) {
+            case LIST:
+                int i = 0;
 
-        itemsContainer.setLayout(new BoxLayout(itemsContainer, BoxLayout.Y_AXIS));
-        add(itemsContainer);
+                for (WikiItem item : items) {
+                    WikiItemPanel itemPanel = new WikiItemPanel(item, config, i > 0, percentBtn);
+                    itemPanels.add(itemPanel);
+                    listViewContainer.add(itemPanel);
+                    i++;
+                }
+
+                listViewContainer.setLayout(new BoxLayout(listViewContainer, BoxLayout.Y_AXIS));
+                add(listViewContainer);
+                break;
+            case GRID:
+                gridViewPanel = new GridPanel(items, config, percentBtn);
+                add(gridViewPanel);
+                break;
+        }
     }
 
 
     void collapse() {
         if (!isCollapsed()) {
             collapseBtn.setSelected(true);
-            itemsContainer.setVisible(false);
+            listViewContainer.setVisible(false);
+            gridViewPanel.setVisible(false);
         }
     }
 
     void expand() {
         if (isCollapsed()) {
             collapseBtn.setSelected(false);
-            itemsContainer.setVisible(true);
+            listViewContainer.setVisible(true);
+            gridViewPanel.setVisible(true);
         }
     }
 
@@ -152,11 +169,5 @@ public class TableBox extends JPanel {
 
     boolean isCollapsed() {
         return collapseBtn.isSelected();
-    }
-
-    void togglePercentMode() {
-        for (WikiItemPanel item : itemPanels) {
-            item.togglePercentMode();
-        }
     }
 }

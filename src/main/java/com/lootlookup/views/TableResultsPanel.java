@@ -13,11 +13,13 @@ import java.util.Map;
 public class TableResultsPanel extends JPanel {
     private LootLookupConfig config;
     private JButton collapseBtn;
+    private ViewOption viewOption;
 
     private final List<TableBox> boxes = new ArrayList<>();
 
-    public TableResultsPanel(Map<DropTableType, WikiItem[]> dropTables, JButton collapseButton, LootLookupConfig config) {
+    public TableResultsPanel(LootLookupConfig config, Map<DropTableType, WikiItem[]> dropTables, ViewOption viewOption, JButton collapseButton, JButton percentButton) {
         this.config = config;
+        this.viewOption = viewOption;
         this.collapseBtn = collapseButton;
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -28,7 +30,7 @@ public class TableResultsPanel extends JPanel {
 
         for (Map.Entry<DropTableType, WikiItem[]> entry : dropTables.entrySet()) {
             DropTableType tableHeader = entry.getKey();
-            TableBox tableBox = new TableBox(tableHeader, entry.getValue(), config);
+            TableBox tableBox = new TableBox(config, entry.getValue(), viewOption, tableHeader, percentButton);
             boxes.add(tableBox);
 
             add(tableBox);
@@ -57,12 +59,6 @@ public class TableResultsPanel extends JPanel {
             }
         }
 
-    }
-
-    void togglePercentMode() {
-        for (TableBox box : boxes) {
-            box.togglePercentMode();
-        }
     }
 
 }

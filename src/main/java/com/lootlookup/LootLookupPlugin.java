@@ -9,22 +9,15 @@ import com.lootlookup.utils.Constants;
 import com.lootlookup.utils.Icons;
 import com.lootlookup.views.LootLookupPanel;
 import net.runelite.api.*;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.MenuOpened;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.game.ItemManager;
-import net.runelite.client.game.ItemMapping;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
-import net.runelite.client.util.ImageUtil;
-import net.runelite.http.api.item.ItemStats;
 import org.apache.commons.lang3.ArrayUtils;
-
-import java.awt.image.BufferedImage;
 
 @PluginDescriptor(
         name = Constants.PLUGIN_NAME
@@ -62,13 +55,19 @@ public class LootLookupPlugin extends Plugin {
 
     @Subscribe
     public void onConfigChanged(ConfigChanged event) {
-        switch (event.getKey()) {
-            case "showRarity":
-            case "showQuantity":
-            case "showPrice":
-                if (panel != null) {
-                    panel.reset();
-                }
+        if (event.getGroup().equals(Constants.PLUGIN_NAME)) {
+            switch (event.getKey()) {
+                case "showRarity":
+                case "showQuantity":
+                case "showPrice":
+                case "disableItemsLinks":
+                case "rareColor":
+                case "superRareColor":
+                case "priceColor":
+                    if (panel != null) {
+                        panel.refreshMainPanel();
+                    }
+            }
         }
     }
 
@@ -88,7 +87,6 @@ public class LootLookupPlugin extends Plugin {
 
         for (MenuEntry menuEntry : menuEntries) {
             String optionText = menuEntry.getOption();
-            MenuAction type = menuEntry.getType();
 
             int id = menuEntry.getIdentifier();
 
