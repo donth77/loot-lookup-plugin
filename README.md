@@ -44,7 +44,6 @@ Config
 Screenshots
 -----------
 ![Giant Rat](https://i.imgur.com/kOpBmOo.png)
-![Zamorak Warrior](https://i.imgur.com/O8AFbFX.png)
 ![Alchemical Hydra - List](https://i.imgur.com/Qi7VV9q.png)
 ![Alchemical Hydra - Grid](https://i.imgur.com/60grKG8.png)
 

@@ -30,10 +30,12 @@ public class WikiItemPanel extends JPanel {
 
     private final JLabel rarityLabel = new JLabel();
     private final JLabel priceLabel = new JLabel();
+    private final JLabel quantityLabel = new JLabel();
     private final JPanel imageContainer = new JPanel(new BorderLayout());
     private final JPanel leftSidePanel = new JPanel(new GridLayout(2, 1));
 
     private static int maxNameLength = 22;
+    private static int labelsMaxLength = 25;
 
     public WikiItemPanel(WikiItem item, LootLookupConfig config, boolean showSeparator, JButton percentButton) {
         this.item = item;
@@ -93,11 +95,13 @@ public class WikiItemPanel extends JPanel {
         container.add(paddingContainer);
 
         rarityLabel.setFont(FontManager.getRunescapeSmallFont());
-        if (item.getRarity() <= 0.01) {
-            rarityLabel.setForeground(config.rareColor());
-        }
-        if (item.getRarity() <= 0.001) {
-            rarityLabel.setForeground(config.superRareColor());
+        if (item.getRarity() > 0) {
+            if (item.getRarity() <= 0.01) {
+                rarityLabel.setForeground(config.rareColor());
+            }
+            if (item.getRarity() <= 0.001) {
+                rarityLabel.setForeground(config.superRareColor());
+            }
         }
 
         priceLabel.setFont(FontManager.getRunescapeSmallFont());
@@ -184,9 +188,7 @@ public class WikiItemPanel extends JPanel {
         setRarityLabelText();
 
         leftSidePanel.add(itemNameLabel);
-        if(item.getRarity() > 0) {
-            leftSidePanel.add(rarityLabel);
-        }
+        leftSidePanel.add(rarityLabel);
 
         container.add(itemImage);
         container.add(leftSidePanel);
@@ -197,8 +199,7 @@ public class WikiItemPanel extends JPanel {
     private JPanel buildRightPanel() {
         JPanel rightSidePanel = new JPanel(new GridLayout(2, 1));
 
-        JLabel quantityLabel = new JLabel();
-        quantityLabel.setText(config != null && config.showQuantity() ? item.getQuantityLabelText() : "");
+        setQuantityLabelText();
         quantityLabel.setFont(FontManager.getRunescapeSmallFont());
         quantityLabel.setBorder(new EmptyBorder(0, 0, 3, 2));
         quantityLabel.setHorizontalAlignment(JLabel.RIGHT);
@@ -218,14 +219,12 @@ public class WikiItemPanel extends JPanel {
     private JPanel buildTopPanel() {
         JPanel topPanel = new JPanel(new BorderLayout());
         JLabel itemNameLabel = new JLabel(itemName);
-        itemNameLabel.setBorder(new EmptyBorder(0, 0, -5, 0));
+        itemNameLabel.setBorder(new EmptyBorder(0, 0, 0, 0));
         itemNameLabel.setFont(FontManager.getRunescapeBoldFont());
         itemNameLabel.setHorizontalAlignment(JLabel.LEFT);
         itemNameLabel.setVerticalAlignment(JLabel.TOP);
 
-
-        JLabel quantityLabel = new JLabel();
-        quantityLabel.setText(config != null && config.showQuantity() ? item.getQuantityLabelText() : "");
+        setQuantityLabelText();
         quantityLabel.setFont(FontManager.getRunescapeSmallFont());
         quantityLabel.setBorder(new EmptyBorder(0, 0, 0, 0));
         quantityLabel.setHorizontalAlignment(JLabel.RIGHT);
@@ -234,7 +233,6 @@ public class WikiItemPanel extends JPanel {
         topPanel.add(itemNameLabel, BorderLayout.WEST);
         topPanel.add(quantityLabel, BorderLayout.EAST);
         topPanel.setBackground(new Color(0, 0, 0, 0));
-        topPanel.setPreferredSize(new Dimension((int) topPanel.getPreferredSize().getWidth(), 25));
         return topPanel;
     }
 
@@ -256,18 +254,28 @@ public class WikiItemPanel extends JPanel {
         return botPanel;
     }
 
+    void setQuantityLabelText() {
+        if (config != null && !config.showQuantity()) {
+            quantityLabel.setText("");
+        } else {
+            quantityLabel.setText((itemName + item.getQuantityLabelText()).length() > labelsMaxLength ? item.getQuantityLabelTextShort() : item.getQuantityLabelText());
+        }
+    }
+
 
     void setRarityLabelText() {
         rarityLabel.setText(item.getRarityLabelText(percentBtn.isSelected()));
         if (config != null && !config.showRarity()) {
             rarityLabel.setText("");
+        } else if (item.getRarity() < 0) {
+            rarityLabel.setText(item.getRarityStr());
         }
     }
 
     void setPriceLabelText() {
         priceLabel.setText("");
         if (config != null && config.showPrice()) {
-            priceLabel.setText((itemName + item.getPriceLabelText()).length() > 27 ? item.getPriceLabelTextShort() : item.getPriceLabelText());
+            priceLabel.setText((itemName + item.getPriceLabelText()).length() > labelsMaxLength ? item.getPriceLabelTextShort() : item.getPriceLabelText());
         }
     }
 }

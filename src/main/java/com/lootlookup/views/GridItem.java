@@ -32,11 +32,13 @@ public class GridItem extends JPanel {
         this.percentBtn = percentButton;
 
         priceColorStr = Util.colorToHex(config.priceColor());
-        if (item.getRarity() <= 0.01) {
-            rarityColorStr = Util.colorToHex(config.rareColor());
-        }
-        if (item.getRarity() <= 0.001) {
-            rarityColorStr = Util.colorToHex(config.superRareColor());
+        if (item.getRarity() > 0) {
+            if (item.getRarity() <= 0.01) {
+                rarityColorStr = Util.colorToHex(config.rareColor());
+            }
+            if (item.getRarity() <= 0.001) {
+                rarityColorStr = Util.colorToHex(config.superRareColor());
+            }
         }
 
         imageLabel.setIcon(new ImageIcon(IconTextField.class.getResource(IconTextField.Icon.LOADING_DARKER.getFile())));
@@ -77,9 +79,11 @@ public class GridItem extends JPanel {
         add(bottomText, BorderLayout.SOUTH);
     }
 
+
     void setTooltipText() {
         setToolTipText("<html>" + item.getName() +
-                (config.showRarity() ? "<br><font color=\"" + rarityColorStr + "\">" + item.getRarityLabelText(percentBtn.isSelected()) + "</font>" : "") +
+                (config.showQuantity() ? "<br>" + item.getQuantityLabelText() : "")  +
+                (config.showRarity() ? "<br><font color=\"" + rarityColorStr + "\">" + (item.getRarity() < 0 ? item.getRarityStr() : item.getRarityLabelText(percentBtn.isSelected())) + "</font>" : "") +
                 (config.showPrice() ? "<br><font color=\"" + priceColorStr + "\">" + item.getPriceLabelText() + "</font>" : "") + "</html>");
     }
 }

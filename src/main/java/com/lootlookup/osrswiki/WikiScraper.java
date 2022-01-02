@@ -50,7 +50,7 @@ public class WikiScraper {
                 if (tableType != null) {
                     WikiItem[] tableRows = getTableItems(tableIndex, "h3 ~ table.item-drops");
 
-                    if (tableRows.length > 0) {
+                    if (tableRows.length > 0 && !dropTables.containsKey(tableType) ) {
                         dropTables.put(tableType, tableRows);
                         tableIndex++;
                     }
@@ -132,6 +132,7 @@ public class WikiScraper {
         String rarityStr = "";
 
         int quantity = 0;
+        String quantityStr = "";
         int price = -1;
 
         if (row.length > 4) {
@@ -144,18 +145,21 @@ public class WikiScraper {
 
             NumberFormat nf = NumberFormat.getNumberInstance();
 
+            quantityStr = row[2];
+            quantityStr = quantityStr.replaceAll("–", "-").replaceAll("\\(.*\\)", "").strip();
             try {
-                quantity = nf.parse(row[2]).intValue();
+                String[] quantityStrs = quantityStr.replaceAll("\\s+", "").split("-");
+                String firstQuantityStr = quantityStrs.length > 0 ? quantityStrs[0] : null;
+                quantity = nf.parse(firstQuantityStr).intValue();
             } catch (ParseException e) {
             }
 
             rarityStr = row[3];
-
+            if(rarityStr.startsWith("2 × ") || rarityStr.startsWith("3 × ")) {
+                rarityStr = rarityStr.substring(4);
+            }
 
             try {
-                if (rarityStr.startsWith("2 × ")) {
-                    rarityStr = rarityStr.substring(4);
-                }
                 String[] rarityStrs = rarityStr.replaceAll("\\s+", "").split(";");
                 String firstRarityStr = rarityStrs.length > 0 ? rarityStrs[0] : null;
 
@@ -181,7 +185,7 @@ public class WikiScraper {
             } catch (ParseException ex) {
             }
         }
-        return new WikiItem(imageUrl, name, quantity, rarityStr, rarity, price);
+        return new WikiItem(imageUrl, name, quantity, quantityStr, rarityStr, rarity, price);
     }
 
 
