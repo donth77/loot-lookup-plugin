@@ -25,7 +25,6 @@ public class WikiItemPanel extends JPanel {
 
     private JButton percentBtn;
 
-    private final NumberFormat nf = NumberFormat.getInstance();
     private final Color bgColor = ColorScheme.DARKER_GRAY_COLOR;
     private final Color hoverColor = bgColor.brighter();
 
@@ -33,6 +32,8 @@ public class WikiItemPanel extends JPanel {
     private final JLabel priceLabel = new JLabel();
     private final JPanel imageContainer = new JPanel(new BorderLayout());
     private final JPanel leftSidePanel = new JPanel(new GridLayout(2, 1));
+
+    private static int maxNameLength = 22;
 
     public WikiItemPanel(WikiItem item, LootLookupConfig config, boolean showSeparator, JButton percentButton) {
         this.item = item;
@@ -43,9 +44,14 @@ public class WikiItemPanel extends JPanel {
 
         this.percentBtn = percentButton;
 
+        if (itemName.length() > maxNameLength) {
+            itemName = itemName.replaceAll("\\(.*\\)", "").strip(); // Don't display any text in parentheses if name is too long
+        }
+
         percentButton.addItemListener((evt) -> {
             setRarityLabelText();
         });
+        ;
 
         setBorder(new EmptyBorder(0, 0, 5, 0));
         setLayout(new BorderLayout());
@@ -66,17 +72,19 @@ public class WikiItemPanel extends JPanel {
         JPanel rightPanel = buildRightPanel();
         rightPanel.setBackground(bgColor);
 
-        if(itemName.length() > 24) {
+        if (itemName.length() > maxNameLength) {
+            // Adjust layout to accomodate long item names
             JPanel itemImage = buildImagePanel();
             JPanel topPanel = buildTopPanel();
             JPanel bottomPanel = buildBottomPanel();
             paddingContainer.add(itemImage, BorderLayout.WEST);
             JPanel rightCol = new JPanel();
             rightCol.setBackground(new Color(0, 0, 0, 0));
-            rightCol.setLayout(new BoxLayout(rightCol, BoxLayout.Y_AXIS));
-            rightCol.add(topPanel);
-            rightCol.add(bottomPanel);
+            rightCol.setLayout(new BorderLayout());
+            rightCol.add(topPanel, BorderLayout.NORTH);
+            rightCol.add(bottomPanel, BorderLayout.SOUTH);
             paddingContainer.add(rightCol, BorderLayout.EAST);
+            setPreferredSize(new Dimension(0, 50));
         } else {
             paddingContainer.add(leftPanel, BorderLayout.WEST);
             paddingContainer.add(rightPanel, BorderLayout.EAST);
@@ -84,13 +92,15 @@ public class WikiItemPanel extends JPanel {
 
         container.add(paddingContainer);
 
-        if(item.getRarity() <= 0.01) {
+        rarityLabel.setFont(FontManager.getRunescapeSmallFont());
+        if (item.getRarity() <= 0.01) {
             rarityLabel.setForeground(config.rareColor());
         }
-        if(item.getRarity() <= 0.001) {
+        if (item.getRarity() <= 0.001) {
             rarityLabel.setForeground(config.superRareColor());
         }
 
+        priceLabel.setFont(FontManager.getRunescapeSmallFont());
         priceLabel.setForeground(config.priceColor());
 
         if (!config.disableItemsLinks()) {
@@ -169,13 +179,14 @@ public class WikiItemPanel extends JPanel {
         itemNameLabel.setVerticalAlignment(JLabel.CENTER);
         ;
 
-        rarityLabel.setFont(FontManager.getRunescapeSmallFont());
         rarityLabel.setHorizontalAlignment(JLabel.LEFT);
         rarityLabel.setVerticalAlignment(JLabel.CENTER);
         setRarityLabelText();
 
         leftSidePanel.add(itemNameLabel);
-        leftSidePanel.add(rarityLabel);
+        if(item.getRarity() > 0) {
+            leftSidePanel.add(rarityLabel);
+        }
 
         container.add(itemImage);
         container.add(leftSidePanel);
@@ -195,7 +206,6 @@ public class WikiItemPanel extends JPanel {
 
 
         setPriceLabelText();
-        priceLabel.setFont(FontManager.getRunescapeSmallFont());
         priceLabel.setVerticalAlignment(JLabel.CENTER);
 
 
@@ -208,39 +218,43 @@ public class WikiItemPanel extends JPanel {
     private JPanel buildTopPanel() {
         JPanel topPanel = new JPanel(new BorderLayout());
         JLabel itemNameLabel = new JLabel(itemName);
-        itemNameLabel.setBorder(new EmptyBorder(0, 0, 3, 0));
+        itemNameLabel.setBorder(new EmptyBorder(0, 0, -5, 0));
         itemNameLabel.setFont(FontManager.getRunescapeBoldFont());
         itemNameLabel.setHorizontalAlignment(JLabel.LEFT);
-        itemNameLabel.setVerticalAlignment(JLabel.CENTER);
+        itemNameLabel.setVerticalAlignment(JLabel.TOP);
 
 
         JLabel quantityLabel = new JLabel();
         quantityLabel.setText(config != null && config.showQuantity() ? item.getQuantityLabelText() : "");
         quantityLabel.setFont(FontManager.getRunescapeSmallFont());
-        quantityLabel.setBorder(new EmptyBorder(0, 0, 3, 2));
+        quantityLabel.setBorder(new EmptyBorder(0, 0, 0, 0));
         quantityLabel.setHorizontalAlignment(JLabel.RIGHT);
-        quantityLabel.setVerticalAlignment(JLabel.CENTER);
+        quantityLabel.setVerticalAlignment(JLabel.TOP);
 
         topPanel.add(itemNameLabel, BorderLayout.WEST);
         topPanel.add(quantityLabel, BorderLayout.EAST);
-        topPanel.setBackground(new Color(0,0,0,0));
+        topPanel.setBackground(new Color(0, 0, 0, 0));
+        topPanel.setPreferredSize(new Dimension((int) topPanel.getPreferredSize().getWidth(), 25));
         return topPanel;
     }
 
 
     private JPanel buildBottomPanel() {
         JPanel botPanel = new JPanel(new BorderLayout());
-        JLabel priceLabel = new JLabel();
-        setPriceLabelText();
 
+        rarityLabel.setHorizontalAlignment(JLabel.LEFT);
+        rarityLabel.setVerticalAlignment(JLabel.CENTER);
+        setRarityLabelText();
+
+        setPriceLabelText();
         priceLabel.setFont(FontManager.getRunescapeSmallFont());
-        priceLabel.setForeground(ColorScheme.BRAND_ORANGE);
+        priceLabel.setHorizontalAlignment(JLabel.RIGHT);
         priceLabel.setVerticalAlignment(JLabel.CENTER);
+        botPanel.add(rarityLabel, BorderLayout.WEST);
         botPanel.add(priceLabel, BorderLayout.EAST);
-        botPanel.setBackground(new Color(0,0,0,0));
+        botPanel.setBackground(new Color(0, 0, 0, 0));
         return botPanel;
     }
-
 
 
     void setRarityLabelText() {
@@ -252,8 +266,8 @@ public class WikiItemPanel extends JPanel {
 
     void setPriceLabelText() {
         priceLabel.setText("");
-        if(config != null && config.showPrice()) {
-            priceLabel.setText(item.getPriceLabelText());
+        if (config != null && config.showPrice()) {
+            priceLabel.setText((itemName + item.getPriceLabelText()).length() > 27 ? item.getPriceLabelTextShort() : item.getPriceLabelText());
         }
     }
 }

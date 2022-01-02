@@ -76,15 +76,10 @@ public class WikiItem {
     }
 
     public String getPriceLabelTextShort() {
-        String priceLabelStr = price > 0 ? Util.rsFormat(price) : "Not sold";
+        String priceLabelStr = price > 0 ? Util.rsFormat(price) : "";
         if (name.equals("Nothing")) {
             priceLabelStr = "";
         }
         return priceLabelStr;
-    }
-
-    public String toString() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(this);
     }
 }

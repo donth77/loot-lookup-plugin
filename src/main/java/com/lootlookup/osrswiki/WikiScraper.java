@@ -33,8 +33,7 @@ public class WikiScraper {
             }
 
             doc = Jsoup.parse(responseHTML);
-            Elements tableHeaders = doc.select("h3 span.mw-headline");
-
+            Elements tableHeaders = doc.select("h3 span.mw-headline, h4 span.mw-headline");
             Elements validTableHeaders = new Elements();
 
             for (Element tableHeader : tableHeaders) {
@@ -49,13 +48,23 @@ public class WikiScraper {
             for (Element validTableHeader : validTableHeaders) {
                 DropTableType tableType = parseTableType(validTableHeader.text());
                 if (tableType != null) {
-                    WikiItem[] tableRows = getTableItems(tableIndex);
+                    WikiItem[] tableRows = getTableItems(tableIndex, "h3 ~ table.item-drops");
 
                     if (tableRows.length > 0) {
                         dropTables.put(tableType, tableRows);
+                        tableIndex++;
                     }
                 }
-                tableIndex++;
+            }
+            if(dropTables.isEmpty()) {
+                tableHeaders = doc.select("h2 span.mw-headline");
+
+                if(!tableHeaders.isEmpty()) {
+                    WikiItem[] tableRows = getTableItems(tableIndex, "h2 ~ table.item-drops");
+                    if(tableRows.length > 0) {
+                        dropTables.put(DropTableType.DROPS, tableRows);
+                    }
+                }
             }
 
             future.complete(dropTables);
@@ -65,9 +74,9 @@ public class WikiScraper {
     }
 
 
-    private static WikiItem[] getTableItems(int tableIndex) {
+    private static WikiItem[] getTableItems(int tableIndex, String selector) {
         List<WikiItem> wikiItems = new ArrayList<>();
-        Elements dropTables = doc.select("h3 ~ table.item-drops");
+        Elements dropTables = doc.select(selector);
 
         if (dropTables.size() > tableIndex) {
             Elements dropTableRows = dropTables.get(tableIndex).select("tbody tr");
@@ -128,7 +137,7 @@ public class WikiScraper {
         if (row.length > 4) {
             imageUrl = row[0];
             name = row[1];
-            if(name.endsWith("(m)")) {
+            if (name.endsWith("(m)")) {
                 // (m) indicates members only, remove because it's not part of actual item name
                 name = name.substring(0, name.length() - 3);
             }
@@ -144,7 +153,7 @@ public class WikiScraper {
 
 
             try {
-                if(rarityStr.startsWith("2 × ")) {
+                if (rarityStr.startsWith("2 × ")) {
                     rarityStr = rarityStr.substring(4);
                 }
                 String[] rarityStrs = rarityStr.replaceAll("\\s+", "").split(";");
