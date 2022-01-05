@@ -10,6 +10,7 @@ public enum DropTableType {
     WEAPONS_ARMOUR("Weapons and armour"),
     RUNES("Runes"),
     RUNES_AND_AMMO("Runes and ammunition"),
+    RUNES_AND_AMMO2("Runes & ammunition"),
     HERBS("Herbs"),
     MATERIALS("Materials"),
     COINS("Coins"),
@@ -65,6 +66,7 @@ public enum DropTableType {
     FOOD("Food"),
     TOOLS("Tools"),
     WEAPONS("Weapons"),
+    SUPPLIES("Supplies")
     ;
 
     private final String label;
