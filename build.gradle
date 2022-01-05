@@ -15,9 +15,6 @@ def runeLiteVersion = '1.8.8'
 dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
 
-	compile 'com.googlecode.json-simple:json-simple:1.1.1'
-	compile group: 'commons-codec', name: 'commons-codec', version: '1.12'
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.0'
 	compile 'org.jsoup:jsoup:1.13.1'
 
 	compileOnly 'org.projectlombok:lombok:1.18.20'
@@ -28,8 +25,8 @@ dependencies {
 	testImplementation group: 'net.runelite', name:'jshell', version: runeLiteVersion
 }
 
-group = 'com.example'
-version = '1.0-SNAPSHOT'
+group = 'com.lootlookup'
+version = '1.0'
 sourceCompatibility = "11"
 
 tasks.withType(JavaCompile) {

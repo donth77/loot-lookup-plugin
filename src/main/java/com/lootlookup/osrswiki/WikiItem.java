@@ -1,7 +1,5 @@
 package com.lootlookup.osrswiki;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.lootlookup.utils.Util;
 
 import java.text.NumberFormat;

@@ -4,6 +4,7 @@ import com.google.inject.Provides;
 
 import javax.inject.Inject;
 import javax.swing.*;
+import java.util.Arrays;
 
 import com.lootlookup.utils.Constants;
 import com.lootlookup.utils.Icons;
@@ -17,7 +18,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
-import org.apache.commons.lang3.ArrayUtils;
 
 @PluginDescriptor(
         name = Constants.PLUGIN_NAME
@@ -34,7 +34,7 @@ public class LootLookupPlugin extends Plugin {
     private NavigationButton navButton;
 
     @Override
-    protected void startUp() throws Exception {
+    protected void startUp() {
         panel = new LootLookupPanel(config);
 
         navButton =
@@ -49,7 +49,7 @@ public class LootLookupPlugin extends Plugin {
     }
 
     @Override
-    protected void shutDown() throws Exception {
+    protected void shutDown()  {
         clientToolbar.removeNavigation(navButton);
     }
 
@@ -107,7 +107,7 @@ public class LootLookupPlugin extends Plugin {
 
         if (isTargetAttackableNPC && entryToAppendOn != null && !config.disableMenuOption()) {
 
-            int idx = ArrayUtils.indexOf(menuEntries, entryToAppendOn);
+            int idx = Arrays.asList(menuEntries).indexOf(entryToAppendOn);
 
             String finalTargetMonsterName = targetMonsterName;
             client
