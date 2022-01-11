@@ -146,7 +146,7 @@ public class WikiScraper {
             NumberFormat nf = NumberFormat.getNumberInstance();
 
             quantityStr = row[2];
-            quantityStr = quantityStr.replaceAll("–", "-").replaceAll("\\(.*\\)", "").strip();
+            quantityStr = quantityStr.replaceAll("–", "-").replaceAll("\\(.*\\)", "").trim();
             try {
                 String[] quantityStrs = quantityStr.replaceAll("\\s+", "").split("-");
                 String firstQuantityStr = quantityStrs.length > 0 ? quantityStrs[0] : null;
@@ -204,7 +204,7 @@ public class WikiScraper {
     }
 
     public static String sanitizeName(String name) {
-        name = name.strip().toLowerCase().replaceAll("\\s+", "_");
+        name = name.trim().toLowerCase().replaceAll("\\s+", "_");
         return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
 

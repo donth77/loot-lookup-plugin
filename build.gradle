@@ -10,7 +10,7 @@ repositories {
 	mavenCentral()
 }
 
-def runeLiteVersion = '1.8.8'
+def runeLiteVersion = '1.8.9'
 
 dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
@@ -27,9 +27,8 @@ dependencies {
 
 group = 'com.lootlookup'
 version = '1.0'
-sourceCompatibility = "11"
+sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
-targetCompatibility = JavaVersion.VERSION_11

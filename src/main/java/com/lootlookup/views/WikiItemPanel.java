@@ -47,7 +47,7 @@ public class WikiItemPanel extends JPanel {
         this.percentBtn = percentButton;
 
         if (itemName.length() > maxNameLength) {
-            itemName = itemName.replaceAll("\\(.*\\)", "").strip(); // Don't display any text in parentheses if name is too long
+            itemName = itemName.replaceAll("\\(.*\\)", "").trim(); // Don't display any text in parentheses if name is too long
         }
 
         percentButton.addItemListener((evt) -> {
