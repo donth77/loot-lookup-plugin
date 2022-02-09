@@ -10,12 +10,12 @@ repositories {
 	mavenCentral()
 }
 
-def runeLiteVersion = '1.8.9'
+def runeLiteVersion = '1.8.11'
 
 dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
 
-	compile 'org.jsoup:jsoup:1.13.1'
+	implementation 'org.jsoup:jsoup:1.13.1'
 
 	compileOnly 'org.projectlombok:lombok:1.18.20'
 	annotationProcessor 'org.projectlombok:lombok:1.18.20'

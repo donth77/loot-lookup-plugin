@@ -10,7 +10,7 @@ import java.awt.*;
 
 import static com.lootlookup.utils.Constants.*;
 
-@ConfigGroup(Constants.PLUGIN_NAME)
+@ConfigGroup(Constants.CONFIG_GROUP)
 public interface LootLookupConfig extends Config {
     @ConfigItem(
             position = 0,

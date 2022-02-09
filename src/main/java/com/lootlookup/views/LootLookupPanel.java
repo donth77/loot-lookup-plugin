@@ -4,6 +4,7 @@ import com.lootlookup.LootLookupConfig;
 import com.lootlookup.osrswiki.DropTableType;
 import com.lootlookup.osrswiki.WikiItem;
 import com.lootlookup.osrswiki.WikiScraper;
+import com.lootlookup.utils.Constants;
 import com.lootlookup.utils.Util;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.PluginPanel;
@@ -158,7 +159,7 @@ public class LootLookupPanel extends PluginPanel {
 
 
         // Error Panel - Empty State
-        errorPanel.setContent("Loot Lookup", "Enter a monster name or select the in-game option.");
+        errorPanel.setContent(Constants.PLUGIN_NAME, "Enter a monster name or select the in-game option.");
 
 
         add(monsterSearchField);

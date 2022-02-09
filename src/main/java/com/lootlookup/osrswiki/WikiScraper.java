@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.lootlookup.utils.Constants;
+import net.runelite.http.api.RuneLiteAPI;
 import okhttp3.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,7 +18,7 @@ public class WikiScraper {
     private final static String baseUrl = "https://oldschool.runescape.wiki";
     private final static String baseWikiUrl = baseUrl + "/w/";
 
-    public static OkHttpClient client = new OkHttpClient();
+    public static OkHttpClient client = RuneLiteAPI.CLIENT;
     private static Document doc;
 
     public static CompletableFuture<Map<DropTableType, WikiItem[]>> getDropsByMonsterName(String monsterName) {

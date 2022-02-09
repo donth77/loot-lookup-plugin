@@ -49,13 +49,13 @@ public class LootLookupPlugin extends Plugin {
     }
 
     @Override
-    protected void shutDown()  {
+    protected void shutDown() {
         clientToolbar.removeNavigation(navButton);
     }
 
     @Subscribe
     public void onConfigChanged(ConfigChanged event) {
-        if (event.getGroup().equals(Constants.PLUGIN_NAME)) {
+        if (event.getGroup().equals(Constants.CONFIG_GROUP)) {
             switch (event.getKey()) {
                 case "showRarity":
                 case "showQuantity":
@@ -86,20 +86,23 @@ public class LootLookupPlugin extends Plugin {
         String targetMonsterName = "";
 
         for (MenuEntry menuEntry : menuEntries) {
-            String optionText = menuEntry.getOption();
+            MenuAction menuType = menuEntry.getType();
 
-            int id = menuEntry.getIdentifier();
+            if (menuType == MenuAction.EXAMINE_NPC || menuType == MenuAction.NPC_SECOND_OPTION) {
+                String optionText = menuEntry.getOption();
+                int id = menuEntry.getIdentifier();
 
-            if (id < cachedNPCs.length) {
-                NPC target = cachedNPCs[id];
+                if (id < cachedNPCs.length) {
+                    NPC target = cachedNPCs[id];
 
-                if (target != null) {
-                    int combatLevel = target.getCombatLevel();
-                    if (optionText.equals("Attack") && combatLevel > 0) {
-                        isTargetAttackableNPC = true;
-                        targetMonsterName = target.getName();
-                    } else if (optionText.equals("Examine")) {
-                        entryToAppendOn = menuEntry;
+                    if (target != null) {
+                        int combatLevel = target.getCombatLevel();
+                        if (optionText.equals("Attack") && combatLevel > 0) {
+                            isTargetAttackableNPC = true;
+                            targetMonsterName = target.getName();
+                        } else if (optionText.equals("Examine")) {
+                            entryToAppendOn = menuEntry;
+                        }
                     }
                 }
             }
