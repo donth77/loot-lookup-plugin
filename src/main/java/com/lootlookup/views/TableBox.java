@@ -1,7 +1,6 @@
 package com.lootlookup.views;
 
 import com.lootlookup.LootLookupConfig;
-import com.lootlookup.osrswiki.DropTableType;
 import com.lootlookup.osrswiki.WikiItem;
 import com.lootlookup.utils.Util;
 import net.runelite.client.ui.ColorScheme;
@@ -10,7 +9,6 @@ import net.runelite.client.util.SwingUtil;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
-import javax.swing.text.View;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -25,7 +23,7 @@ public class TableBox extends JPanel {
 
     private WikiItem[] items;
     private ViewOption viewOption;
-    private DropTableType headerStr;
+    private String headerStr;
     private JButton percentBtn;
 
     private final JButton collapseBtn = new JButton();
@@ -39,7 +37,7 @@ public class TableBox extends JPanel {
 
     private final List<WikiItemPanel> itemPanels = new ArrayList<>();
 
-    public TableBox(LootLookupConfig config, WikiItem[] items, ViewOption viewOption, DropTableType headerStr, JButton percentButton) {
+    public TableBox(LootLookupConfig config, WikiItem[] items, ViewOption viewOption, String headerStr, JButton percentButton) {
         this.config = config;
         this.items = items;
         this.headerStr = headerStr;
