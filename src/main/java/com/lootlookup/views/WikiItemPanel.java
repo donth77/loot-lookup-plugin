@@ -48,7 +48,7 @@ public class WikiItemPanel extends JPanel {
         if (itemName.length() > maxNameLength) {
             itemName = itemName.replaceAll("\\(.*\\)", "").trim(); // Don't display any text in parentheses if name is too long
 
-            if(itemName.length() > maxNameLength) {
+            if (itemName.length() > maxNameLength) {
                 itemName = itemName.substring(0, maxNameLength) + "…"; // Manually truncate the item name
             }
         }
@@ -77,23 +77,8 @@ public class WikiItemPanel extends JPanel {
         JPanel rightPanel = buildRightPanel();
         rightPanel.setBackground(bgColor);
 
-        if (itemName.length() > maxNameLength) {
-            // Adjust layout to accomodate long item names
-            JPanel itemImage = buildImagePanel();
-            JPanel topPanel = buildTopPanel();
-            JPanel bottomPanel = buildBottomPanel();
-            paddingContainer.add(itemImage, BorderLayout.WEST);
-            JPanel rightCol = new JPanel();
-            rightCol.setBackground(new Color(0, 0, 0, 0));
-            rightCol.setLayout(new BorderLayout());
-            rightCol.add(topPanel, BorderLayout.NORTH);
-            rightCol.add(bottomPanel, BorderLayout.SOUTH);
-            paddingContainer.add(rightCol, BorderLayout.EAST);
-            setPreferredSize(new Dimension(0, 50));
-        } else {
-            paddingContainer.add(leftPanel, BorderLayout.WEST);
-            paddingContainer.add(rightPanel, BorderLayout.EAST);
-        }
+        paddingContainer.add(leftPanel, BorderLayout.WEST);
+        paddingContainer.add(rightPanel, BorderLayout.EAST);
 
         container.add(paddingContainer);
 
@@ -141,7 +126,7 @@ public class WikiItemPanel extends JPanel {
                 }
             });
         }
-        if(itemName.endsWith("…")) {
+        if (itemName.endsWith("…")) {
             // If item name is truncated, show the full name on hover
             container.setToolTipText(item.getName());
         }
@@ -221,44 +206,6 @@ public class WikiItemPanel extends JPanel {
         rightSidePanel.add(priceLabel);
 
         return rightSidePanel;
-    }
-
-    private JPanel buildTopPanel() {
-        JPanel topPanel = new JPanel(new BorderLayout());
-        JLabel itemNameLabel = new JLabel(itemName);
-        itemNameLabel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        itemNameLabel.setFont(FontManager.getRunescapeBoldFont());
-        itemNameLabel.setHorizontalAlignment(JLabel.LEFT);
-        itemNameLabel.setVerticalAlignment(JLabel.TOP);
-
-        setQuantityLabelText();
-        quantityLabel.setFont(FontManager.getRunescapeSmallFont());
-        quantityLabel.setBorder(new EmptyBorder(0, 0, 0, 0));
-        quantityLabel.setHorizontalAlignment(JLabel.RIGHT);
-        quantityLabel.setVerticalAlignment(JLabel.TOP);
-
-        topPanel.add(itemNameLabel, BorderLayout.WEST);
-        topPanel.add(quantityLabel, BorderLayout.EAST);
-        topPanel.setBackground(new Color(0, 0, 0, 0));
-        return topPanel;
-    }
-
-
-    private JPanel buildBottomPanel() {
-        JPanel botPanel = new JPanel(new BorderLayout());
-
-        rarityLabel.setHorizontalAlignment(JLabel.LEFT);
-        rarityLabel.setVerticalAlignment(JLabel.CENTER);
-        setRarityLabelText();
-
-        setPriceLabelText();
-        priceLabel.setFont(FontManager.getRunescapeSmallFont());
-        priceLabel.setHorizontalAlignment(JLabel.RIGHT);
-        priceLabel.setVerticalAlignment(JLabel.CENTER);
-        botPanel.add(rarityLabel, BorderLayout.WEST);
-        botPanel.add(priceLabel, BorderLayout.EAST);
-        botPanel.setBackground(new Color(0, 0, 0, 0));
-        return botPanel;
     }
 
     void setQuantityLabelText() {

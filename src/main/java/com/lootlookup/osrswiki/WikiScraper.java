@@ -53,6 +53,7 @@ public class WikiScraper {
                 // ---
 
                 Boolean isDropsTableHeader = tableHeaderText.toLowerCase().contains("drops");
+                Boolean isPickpocketLootHeader = tableHeaderText.toLowerCase().contains("loot");
 
                 Elements parentH2 = tableHeader.parent().select("h2");
                 Boolean isParentH2 = !parentH2.isEmpty();
@@ -63,7 +64,7 @@ public class WikiScraper {
                 Elements parentH4 = tableHeader.parent().select("h4");
                 Boolean isParentH4 = !parentH4.isEmpty();
 
-                if (isParentH2) {
+                if (isParentH2 || (isPickpocketLootHeader && isParentH3)) {
                     if (!currDropTable.isEmpty()) {
                         // reset section
                         currDropTableSection.setTable(currDropTable);
@@ -73,7 +74,7 @@ public class WikiScraper {
                         currDropTableSection = new DropTableSection();
                     }
 
-                    if (isDropsTableHeader) {
+                    if (isDropsTableHeader || isPickpocketLootHeader) {
                         // new section
                         parseDropTableSection = true;
                         currDropTableSection.setHeader(tableHeader.text());

@@ -20,7 +20,7 @@ RuneLite plugin to quickly reference the monster drop tables from OSRS Wiki
 Config
 ------
 
-![config](https://i.imgur.com/poixvAN.png)
+![config](https://i.imgur.com/aydtQ55.png)
 #### Default view option
   - Sets the default view option on plugin startup - List or Grid
 ####  Rarity 
@@ -33,7 +33,7 @@ Config
   - Hides the in-game right click menu option that is displayed for attackable NPCs
 ####  Disable Item links (List only)
   - Disables links to OSRS Wiki pages for items in List view
-####  Number of rows (Grid only)
+####  Items per row (Grid only)
   - Sets the number of items displayed in a row in Grid view
 ####  Rare Color
 - Color to highlight the rarity of items with a value of 1/100 - 1/1000
@@ -58,6 +58,14 @@ Screenshots
 - Sort each section individually by item name, quantity, rarity, and price
 - Replace OSRS Wiki scraping with [OSRSBox](https://www.osrsbox.com/) data pending [#161](https://github.com/osrsbox/osrsbox-db/issues/161)
 
+## Issues
+
+If you find any problems or have feedback, please feel free to submit an issue [here](https://github.com/donth77/loot-lookup-plugin/issues)
+
+Credits
+-------
+Based on the [Loot Table](https://github.com/Sir-Kyle-Richardson/OSRS-loottable) plugin from Kyle Richardson
+
 ## Changelog
 v1.0
 - Initial release; added to Plugin Hub
@@ -68,6 +76,3 @@ v1.1.0
 - Improve handling of long names in List view
 - Add config option to choose between 4 or 5 items in Grid view
 
-Credits
--------
-Based on the [Loot Table](https://github.com/Sir-Kyle-Richardson/OSRS-loottable) plugin from Kyle Richardson
