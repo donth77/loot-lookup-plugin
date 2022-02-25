@@ -64,6 +64,7 @@ public class LootLookupPlugin extends Plugin {
                 case "rareColor":
                 case "superRareColor":
                 case "priceColor":
+                case "gridRowOption":
                     if (panel != null) {
                         panel.refreshMainPanel();
                     }

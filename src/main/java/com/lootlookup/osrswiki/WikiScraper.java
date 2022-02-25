@@ -21,54 +21,97 @@ public class WikiScraper {
     public static OkHttpClient client = RuneLiteAPI.CLIENT;
     private static Document doc;
 
-    public static CompletableFuture<Map<DropTableType, WikiItem[]>> getDropsByMonsterName(String monsterName) {
-        CompletableFuture<Map<DropTableType, WikiItem[]>> future = new CompletableFuture<>();
+    public static CompletableFuture<DropTableSection[]> getDropsByMonsterName(String monsterName) {
+        CompletableFuture<DropTableSection[]> future = new CompletableFuture<>();
 
         String url = getWikiUrl(monsterName);
 
         requestAsync(url).whenCompleteAsync((responseHTML, ex) -> {
-            Map<DropTableType, WikiItem[]> dropTables = new LinkedHashMap<>();
+            List<DropTableSection> dropTableSections = new ArrayList<>();
 
             if (ex != null) {
-                future.complete(dropTables);
+                DropTableSection[] result = new DropTableSection[0];
+                future.complete(result);
             }
 
             doc = Jsoup.parse(responseHTML);
-            Elements tableHeaders = doc.select("h3 span.mw-headline, h4 span.mw-headline");
-            Elements validTableHeaders = new Elements();
+            Elements tableHeaders = doc.select("h2 span.mw-headline, h3 span.mw-headline, h4 span.mw-headline");
+
+            Boolean parseDropTableSection = false;
+            DropTableSection currDropTableSection = new DropTableSection();
+            Map<String, WikiItem[]> currDropTable = new LinkedHashMap<>();
+            int tableIndexH3 = 0;
+            int tableIndexH4 = 0;
 
             for (Element tableHeader : tableHeaders) {
-                DropTableType tableType = parseTableType(tableHeader.text());
-                if (tableType != null) {
-                    validTableHeaders.add(tableHeader);
-                }
+                String tableHeaderText = tableHeader.text();
+                String monsterNameLC = monsterName.toLowerCase();
 
-            }
+                // --- Handle edge cases for specific pages ---
+                if (monsterNameLC.equals("hespori") && tableHeaderText.equals("Main table")) continue;
+                if (monsterNameLC.equals("chaos elemental") && tableHeaderText.equals("Major drops")) continue;
+                // ---
 
-            int tableIndex = 0;
-            for (Element validTableHeader : validTableHeaders) {
-                DropTableType tableType = parseTableType(validTableHeader.text());
-                if (tableType != null) {
-                    WikiItem[] tableRows = getTableItems(tableIndex, "h3 ~ table.item-drops");
+                Boolean isDropsTableHeader = tableHeaderText.toLowerCase().contains("drops");
 
-                    if (tableRows.length > 0 && !dropTables.containsKey(tableType) ) {
-                        dropTables.put(tableType, tableRows);
-                        tableIndex++;
+                Elements parentH2 = tableHeader.parent().select("h2");
+                Boolean isParentH2 = !parentH2.isEmpty();
+
+                Elements parentH3 = tableHeader.parent().select("h3");
+                Boolean isParentH3 = !parentH3.isEmpty();
+
+                Elements parentH4 = tableHeader.parent().select("h4");
+                Boolean isParentH4 = !parentH4.isEmpty();
+
+                if (isParentH2) {
+                    if (!currDropTable.isEmpty()) {
+                        // reset section
+                        currDropTableSection.setTable(currDropTable);
+                        dropTableSections.add(currDropTableSection);
+
+                        currDropTable = new LinkedHashMap<>();
+                        currDropTableSection = new DropTableSection();
+                    }
+
+                    if (isDropsTableHeader) {
+                        // new section
+                        parseDropTableSection = true;
+                        currDropTableSection.setHeader(tableHeader.text());
+                    } else {
+                        parseDropTableSection = false;
+                    }
+                } else if (parseDropTableSection && (isParentH3 || isParentH4)) {
+                    String element = isParentH4 ? "h4" : "h3";
+                    int tableIndex = isParentH4 ? tableIndexH4 : tableIndexH3;
+                    // parse table
+                    WikiItem[] tableRows = getTableItems(tableIndex, element + " ~ table.item-drops");
+
+                    if (tableRows.length > 0 && !currDropTable.containsKey(tableHeader.text())) {
+                        currDropTable.put(tableHeader.text(), tableRows);
+                        if (isParentH4) {
+                            tableIndexH4++;
+                        } else {
+                            tableIndexH3++;
+                        }
                     }
                 }
             }
-            if(dropTables.isEmpty()) {
+
+            if (dropTableSections.isEmpty()) {
                 tableHeaders = doc.select("h2 span.mw-headline");
 
-                if(!tableHeaders.isEmpty()) {
-                    WikiItem[] tableRows = getTableItems(tableIndex, "h2 ~ table.item-drops");
-                    if(tableRows.length > 0) {
-                        dropTables.put(DropTableType.DROPS, tableRows);
+                if (!tableHeaders.isEmpty()) {
+                    WikiItem[] tableRows = getTableItems(0, "h2 ~ table.item-drops");
+                    if (tableRows.length > 0) {
+                        currDropTable = new LinkedHashMap<>();
+                        currDropTable.put("Drops", tableRows);
+                        dropTableSections.add(new DropTableSection("Drops", currDropTable));
                     }
                 }
             }
 
-            future.complete(dropTables);
+            DropTableSection[] result = dropTableSections.toArray(new DropTableSection[dropTableSections.size()]);
+            future.complete(result);
         });
 
         return future;
@@ -116,15 +159,6 @@ public class WikiScraper {
         return wikiItems.toArray(result);
     }
 
-    public static DropTableType parseTableType(String tableHeader) {
-        for (DropTableType tableType : DropTableType.values()) {
-            if (tableHeader.equalsIgnoreCase(String.valueOf(tableType))) {
-                return tableType;
-            }
-        }
-        return null;
-    }
-
     public static WikiItem parseRow(String[] row) {
         String imageUrl = "";
         String name = "";
@@ -156,7 +190,9 @@ public class WikiScraper {
             }
 
             rarityStr = row[3];
-            if(rarityStr.startsWith("2 × ") || rarityStr.startsWith("3 × ")) {
+            if (rarityStr.startsWith("~")) {
+                rarityStr = rarityStr.substring(1);
+            } else if (rarityStr.startsWith("2 × ") || rarityStr.startsWith("3 × ")) {
                 rarityStr = rarityStr.substring(4);
             }
 
@@ -199,9 +235,13 @@ public class WikiScraper {
         return baseWikiUrl + sanitizedName;
     }
 
-    public static String getWikiUrlForDrops(String monsterName) {
+    public static String getWikiUrlForDrops(String monsterName, String anchorText) {
         String sanitizedMonsterName = sanitizeName(monsterName);
-        return baseWikiUrl + sanitizedMonsterName + "#Drops";
+        String anchorStr = "Drops";
+        if (anchorText != null) {
+            anchorStr = anchorText.replaceAll("\\s+", "_");
+        }
+        return baseWikiUrl + sanitizedMonsterName + "#" + anchorStr;
     }
 
     public static String sanitizeName(String name) {

@@ -1,7 +1,6 @@
 package com.lootlookup.views;
 
 import com.lootlookup.LootLookupConfig;
-import com.lootlookup.osrswiki.DropTableType;
 import com.lootlookup.osrswiki.WikiItem;
 import com.lootlookup.utils.Util;
 import net.runelite.client.ui.ColorScheme;
@@ -10,7 +9,6 @@ import net.runelite.client.util.SwingUtil;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
-import javax.swing.text.View;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -25,7 +23,8 @@ public class TableBox extends JPanel {
 
     private WikiItem[] items;
     private ViewOption viewOption;
-    private DropTableType headerStr;
+    private String fullHeaderStr;
+    private String headerStr;
     private JButton percentBtn;
 
     private final JButton collapseBtn = new JButton();
@@ -38,10 +37,12 @@ public class TableBox extends JPanel {
     private final Color HOVER_COLOR = ColorScheme.DARKER_GRAY_HOVER_COLOR.darker();
 
     private final List<WikiItemPanel> itemPanels = new ArrayList<>();
+    private static int maxHeaderLength = 28;
 
-    public TableBox(LootLookupConfig config, WikiItem[] items, ViewOption viewOption, DropTableType headerStr, JButton percentButton) {
+    public TableBox(LootLookupConfig config, WikiItem[] items, ViewOption viewOption, String headerStr, JButton percentButton) {
         this.config = config;
         this.items = items;
+        this.fullHeaderStr = headerStr;
         this.headerStr = headerStr;
         this.viewOption = viewOption;
         this.percentBtn = percentButton;
@@ -59,7 +60,12 @@ public class TableBox extends JPanel {
 
     void buildLeftHeader() {
         // Label
-        JLabel headerLabel = new JLabel(String.valueOf(headerStr));
+
+        if (headerStr.length() > maxHeaderLength) {
+            headerStr = headerStr.substring(0, maxHeaderLength) + "…"; // Manually truncate the header
+        }
+
+        JLabel headerLabel = new JLabel(headerStr);
         headerLabel.setFont(FontManager.getRunescapeBoldFont());
         headerLabel.setForeground(ColorScheme.BRAND_ORANGE);
         headerLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -69,10 +75,10 @@ public class TableBox extends JPanel {
 
         buildCollapseBtn();
 
-         leftHeader.add(Box.createRigidArea(new Dimension(5, 0)));
-         leftHeader.add(collapseBtn);
-         leftHeader.add(Box.createRigidArea(new Dimension(10, 0)));
-         leftHeader.add(headerLabel);
+        leftHeader.add(Box.createRigidArea(new Dimension(5, 0)));
+        leftHeader.add(collapseBtn);
+        leftHeader.add(Box.createRigidArea(new Dimension(10, 0)));
+        leftHeader.add(headerLabel);
 
     }
 
@@ -114,6 +120,10 @@ public class TableBox extends JPanel {
                 collapseBtn.setBackground(HEADER_BG_COLOR);
             }
         });
+        if (headerStr.endsWith("…")) {
+            // If header is truncated, show the full text on hover
+            headerContainer.setToolTipText(fullHeaderStr);
+        }
 
         headerContainer.add(leftHeader, BorderLayout.WEST);
         add(headerContainer);
@@ -121,7 +131,7 @@ public class TableBox extends JPanel {
     }
 
     void buildItemsContainer() {
-        switch(viewOption) {
+        switch (viewOption) {
             case LIST:
                 int i = 0;
 

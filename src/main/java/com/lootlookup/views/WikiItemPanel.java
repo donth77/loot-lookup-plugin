@@ -14,7 +14,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.text.NumberFormat;
 
 public class WikiItemPanel extends JPanel {
     private LootLookupConfig config;
@@ -48,6 +47,10 @@ public class WikiItemPanel extends JPanel {
 
         if (itemName.length() > maxNameLength) {
             itemName = itemName.replaceAll("\\(.*\\)", "").trim(); // Don't display any text in parentheses if name is too long
+
+            if(itemName.length() > maxNameLength) {
+                itemName = itemName.substring(0, maxNameLength) + "…"; // Manually truncate the item name
+            }
         }
 
         percentButton.addItemListener((evt) -> {
@@ -112,7 +115,7 @@ public class WikiItemPanel extends JPanel {
             container.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent evt) {
-                    String wikiUrl = WikiScraper.getWikiUrl(itemName);
+                    String wikiUrl = WikiScraper.getWikiUrl(item.getName());
                     try {
                         Desktop.getDesktop().browse(new URL(wikiUrl).toURI());
                     } catch (Exception e) {
@@ -137,6 +140,10 @@ public class WikiItemPanel extends JPanel {
                     imageContainer.setBackground(bgColor);
                 }
             });
+        }
+        if(itemName.endsWith("…")) {
+            // If item name is truncated, show the full name on hover
+            container.setToolTipText(item.getName());
         }
 
         add(container);
@@ -275,7 +282,7 @@ public class WikiItemPanel extends JPanel {
     void setPriceLabelText() {
         priceLabel.setText("");
         if (config != null && config.showPrice()) {
-            priceLabel.setText((itemName + item.getPriceLabelText()).length() > labelsMaxLength ? item.getPriceLabelTextShort() : item.getPriceLabelText());
+            priceLabel.setText((itemName + item.getPriceLabelText()).length() > labelsMaxLength && item.getPrice() > 1000 ? item.getPriceLabelTextShort() : item.getPriceLabelText());
         }
     }
 }

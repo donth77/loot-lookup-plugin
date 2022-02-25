@@ -1,8 +1,7 @@
 package com.lootlookup.views;
 
 import com.lootlookup.LootLookupConfig;
-import com.lootlookup.osrswiki.DropTableType;
-import com.lootlookup.osrswiki.WikiItem;
+import com.lootlookup.osrswiki.DropTableSection;
 import com.lootlookup.osrswiki.WikiScraper;
 import com.lootlookup.utils.Constants;
 import com.lootlookup.utils.Util;
@@ -19,14 +18,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.util.Map;
 
 import static com.lootlookup.utils.Icons.*;
 
 public class LootLookupPanel extends PluginPanel {
     private LootLookupConfig config;
     private TableResultsPanel tablePanel;
-    private Map<DropTableType, WikiItem[]> dropTables;
+    private DropTableSection[] dropTableSections;
     private ViewOption viewOption = ViewOption.LIST;
 
     private IconTextField monsterSearchField = new IconTextField();
@@ -49,13 +47,12 @@ public class LootLookupPanel extends PluginPanel {
     private final JPanel gridBtnContainer = new JPanel();
     ButtonGroup viewOptionGroup = new ButtonGroup();
 
-
     private final PluginErrorPanel errorPanel = new PluginErrorPanel();
 
     public LootLookupPanel(LootLookupConfig config) {
         this.config = config;
 
-        if(config != null) {
+        if (config != null) {
             viewOption = config.viewOption();
         }
 
@@ -111,7 +108,6 @@ public class LootLookupPanel extends PluginPanel {
         listBtnContainer.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 
 
-
         // Grid Button
 
         SwingUtil.removeButtonDecorations(gridBtn);
@@ -135,7 +131,7 @@ public class LootLookupPanel extends PluginPanel {
 
         // Percent Button
 
-        buildButton(percentBtn, PERCENT_ICON_FADED, PERCENT_ICON, "Rarity Percentage Off" , "Rarity Percentage On", evt -> {
+        buildButton(percentBtn, PERCENT_ICON_FADED, PERCENT_ICON, "Rarity Percentage Off", "Rarity Percentage On", evt -> {
             percentBtn.setSelected(!percentBtn.isSelected());
         });
 
@@ -149,7 +145,7 @@ public class LootLookupPanel extends PluginPanel {
         externalLinkBtn.setToolTipText("Wiki");
         Util.showHandCursorOnHover(externalLinkBtn);
         externalLinkBtn.addActionListener((evt) -> {
-            String wikiUrl = WikiScraper.getWikiUrlForDrops(monsterSearchField.getText());
+            String wikiUrl = WikiScraper.getWikiUrlForDrops(monsterSearchField.getText(), tablePanel.getSelectedHeader());
             try {
                 Desktop.getDesktop().browse(new URL(wikiUrl).toURI());
             } catch (Exception e) {
@@ -169,11 +165,11 @@ public class LootLookupPanel extends PluginPanel {
     }
 
 
-    void rebuildMainPanel(Map<DropTableType, WikiItem[]> dropTables, ViewOption viewOption) {
+    void rebuildMainPanel() {
         remove(errorPanel);
         SwingUtil.fastRemoveAll(mainPanel);
 
-        tablePanel = new TableResultsPanel(config, dropTables, viewOption, collapseBtn, percentBtn);
+        tablePanel = new TableResultsPanel(config, dropTableSections, viewOption, collapseBtn, percentBtn, tablePanel != null ? tablePanel.getSelectedIndex() : 0);
 
         actionsLeft.add(Box.createRigidArea(new Dimension(5, 0)));
         actionsLeft.add(collapseBtn);
@@ -193,6 +189,7 @@ public class LootLookupPanel extends PluginPanel {
         mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         mainPanel.add(actionsContainer);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
         mainPanel.add(tablePanel);
 
         mainPanel.revalidate();
@@ -250,9 +247,12 @@ public class LootLookupPanel extends PluginPanel {
         monsterSearchField.setIcon(IconTextField.Icon.LOADING_DARKER);
 
 
-        WikiScraper.getDropsByMonsterName(monsterName).whenCompleteAsync((dropTables, ex) -> {
-            this.dropTables = dropTables;
-            monsterSearchField.setIcon(dropTables.isEmpty() ? IconTextField.Icon.ERROR : IconTextField.Icon.SEARCH);
+        WikiScraper.getDropsByMonsterName(monsterName).whenCompleteAsync((dropTableSections, ex) -> {
+            this.dropTableSections = dropTableSections;
+            if(tablePanel != null) {
+                tablePanel.resetSelectedIndex();
+            }
+            monsterSearchField.setIcon(dropTableSections.length == 0 ? IconTextField.Icon.ERROR : IconTextField.Icon.SEARCH);
             monsterSearchField.setEditable(true);
             refreshMainPanel();
         });
@@ -280,9 +280,9 @@ public class LootLookupPanel extends PluginPanel {
     }
 
     public void refreshMainPanel() {
-        if (dropTables != null && !dropTables.isEmpty()) {
+        if (dropTableSections != null && dropTableSections.length > 0) {
             SwingUtilities.invokeLater(() -> {
-                rebuildMainPanel(dropTables, viewOption);
+                rebuildMainPanel();
             });
         }
     }
