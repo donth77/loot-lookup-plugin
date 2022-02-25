@@ -12,7 +12,9 @@ RuneLite plugin to quickly reference the monster drop tables from OSRS Wiki
 - Button to open the OSRS Wiki page for the monster in default web browser
 - List and Grid views
 - Links to wiki pages for items in List view
+- Choose between 4 or 5 rows in Grid view
 - Customize colors for rarity and prices
+- Multiple tabs for monsters with separate drop tables
 
 
 Config
@@ -29,8 +31,10 @@ Config
   - Show/hide price value in the drop tables
 #### Disable Right Click Menu Option
   - Hides the in-game right click menu option that is displayed for attackable NPCs
-####  Disable Item links (List view only)
+####  Disable Item links (List only)
   - Disables links to OSRS Wiki pages for items in List view
+####  Number of rows (Grid only)
+  - Sets the number of items displayed in a row in Grid view
 ####  Rare Color
 - Color to highlight the rarity of items with a value of 1/100 - 1/1000
 ####  Super Rare Color
@@ -46,12 +50,23 @@ Screenshots
 ![Giant Rat](https://i.imgur.com/kOpBmOo.png)
 ![Alchemical Hydra - List](https://i.imgur.com/Qi7VV9q.png)
 ![Alchemical Hydra - Grid](https://i.imgur.com/60grKG8.png)
+![Black demon - tabs](https://i.imgur.com/OlSsUHR.png)
 
 ## Future
 
 - Filter drop table sections
 - Sort each section individually by item name, quantity, rarity, and price
 - Replace OSRS Wiki scraping with [OSRSBox](https://www.osrsbox.com/) data pending [#161](https://github.com/osrsbox/osrsbox-db/issues/161)
+
+## Changelog
+v1.0
+- Initial release; added to Plugin Hub
+
+v1.1.0
+- Improve parsing for OSRS Wiki pages
+- Add multiple tabs for monster pages with separate drop tables
+- Improve handling of long names in List view
+- Add config option to choose between 4 or 5 items in Grid view
 
 Credits
 -------

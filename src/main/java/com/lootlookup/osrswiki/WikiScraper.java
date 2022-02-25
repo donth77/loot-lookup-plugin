@@ -40,10 +40,19 @@ public class WikiScraper {
             Boolean parseDropTableSection = false;
             DropTableSection currDropTableSection = new DropTableSection();
             Map<String, WikiItem[]> currDropTable = new LinkedHashMap<>();
-            int tableIndex = 0;
+            int tableIndexH3 = 0;
+            int tableIndexH4 = 0;
 
             for (Element tableHeader : tableHeaders) {
-                Boolean isDropsTableHeader = tableHeader.text().toLowerCase().contains("drops");
+                String tableHeaderText = tableHeader.text();
+                String monsterNameLC = monsterName.toLowerCase();
+
+                // --- Handle edge cases for specific pages ---
+                if (monsterNameLC.equals("hespori") && tableHeaderText.equals("Main table")) continue;
+                if (monsterNameLC.equals("chaos elemental") && tableHeaderText.equals("Major drops")) continue;
+                // ---
+
+                Boolean isDropsTableHeader = tableHeaderText.toLowerCase().contains("drops");
 
                 Elements parentH2 = tableHeader.parent().select("h2");
                 Boolean isParentH2 = !parentH2.isEmpty();
@@ -51,7 +60,10 @@ public class WikiScraper {
                 Elements parentH3 = tableHeader.parent().select("h3");
                 Boolean isParentH3 = !parentH3.isEmpty();
 
-                if(isParentH2) {
+                Elements parentH4 = tableHeader.parent().select("h4");
+                Boolean isParentH4 = !parentH4.isEmpty();
+
+                if (isParentH2) {
                     if (!currDropTable.isEmpty()) {
                         // reset section
                         currDropTableSection.setTable(currDropTable);
@@ -61,21 +73,40 @@ public class WikiScraper {
                         currDropTableSection = new DropTableSection();
                     }
 
-                    if(isDropsTableHeader) {
+                    if (isDropsTableHeader) {
                         // new section
                         parseDropTableSection = true;
                         currDropTableSection.setHeader(tableHeader.text());
                     } else {
                         parseDropTableSection = false;
                     }
-                } else if(parseDropTableSection && isParentH3) {
-                        // parse table
-                        WikiItem[] tableRows = getTableItems(tableIndex, "h3 ~ table.item-drops");
+                } else if (parseDropTableSection && (isParentH3 || isParentH4)) {
+                    String element = isParentH4 ? "h4" : "h3";
+                    int tableIndex = isParentH4 ? tableIndexH4 : tableIndexH3;
+                    // parse table
+                    WikiItem[] tableRows = getTableItems(tableIndex, element + " ~ table.item-drops");
 
-                        if (tableRows.length > 0 && !currDropTable.containsKey(tableHeader.text())) {
-                            currDropTable.put(tableHeader.text(), tableRows);
-                            tableIndex++;
+                    if (tableRows.length > 0 && !currDropTable.containsKey(tableHeader.text())) {
+                        currDropTable.put(tableHeader.text(), tableRows);
+                        if (isParentH4) {
+                            tableIndexH4++;
+                        } else {
+                            tableIndexH3++;
                         }
+                    }
+                }
+            }
+
+            if (dropTableSections.isEmpty()) {
+                tableHeaders = doc.select("h2 span.mw-headline");
+
+                if (!tableHeaders.isEmpty()) {
+                    WikiItem[] tableRows = getTableItems(0, "h2 ~ table.item-drops");
+                    if (tableRows.length > 0) {
+                        currDropTable = new LinkedHashMap<>();
+                        currDropTable.put("Drops", tableRows);
+                        dropTableSections.add(new DropTableSection("Drops", currDropTable));
+                    }
                 }
             }
 
@@ -161,7 +192,7 @@ public class WikiScraper {
             rarityStr = row[3];
             if (rarityStr.startsWith("~")) {
                 rarityStr = rarityStr.substring(1);
-            } else if(rarityStr.startsWith("2 × ") || rarityStr.startsWith("3 × ")) {
+            } else if (rarityStr.startsWith("2 × ") || rarityStr.startsWith("3 × ")) {
                 rarityStr = rarityStr.substring(4);
             }
 

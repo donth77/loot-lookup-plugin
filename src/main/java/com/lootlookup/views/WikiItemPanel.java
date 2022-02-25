@@ -35,7 +35,7 @@ public class WikiItemPanel extends JPanel {
 
     private static int maxNameLength = 22;
     private static int labelsMaxLength = 25;
-    
+
     public WikiItemPanel(WikiItem item, LootLookupConfig config, boolean showSeparator, JButton percentButton) {
         this.item = item;
         this.config = config;

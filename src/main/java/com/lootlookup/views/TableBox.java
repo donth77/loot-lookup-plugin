@@ -23,6 +23,7 @@ public class TableBox extends JPanel {
 
     private WikiItem[] items;
     private ViewOption viewOption;
+    private String fullHeaderStr;
     private String headerStr;
     private JButton percentBtn;
 
@@ -36,10 +37,12 @@ public class TableBox extends JPanel {
     private final Color HOVER_COLOR = ColorScheme.DARKER_GRAY_HOVER_COLOR.darker();
 
     private final List<WikiItemPanel> itemPanels = new ArrayList<>();
+    private static int maxHeaderLength = 28;
 
     public TableBox(LootLookupConfig config, WikiItem[] items, ViewOption viewOption, String headerStr, JButton percentButton) {
         this.config = config;
         this.items = items;
+        this.fullHeaderStr = headerStr;
         this.headerStr = headerStr;
         this.viewOption = viewOption;
         this.percentBtn = percentButton;
@@ -57,7 +60,12 @@ public class TableBox extends JPanel {
 
     void buildLeftHeader() {
         // Label
-        JLabel headerLabel = new JLabel(String.valueOf(headerStr));
+
+        if (headerStr.length() > maxHeaderLength) {
+            headerStr = headerStr.substring(0, maxHeaderLength) + "…"; // Manually truncate the header
+        }
+
+        JLabel headerLabel = new JLabel(headerStr);
         headerLabel.setFont(FontManager.getRunescapeBoldFont());
         headerLabel.setForeground(ColorScheme.BRAND_ORANGE);
         headerLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -67,10 +75,10 @@ public class TableBox extends JPanel {
 
         buildCollapseBtn();
 
-         leftHeader.add(Box.createRigidArea(new Dimension(5, 0)));
-         leftHeader.add(collapseBtn);
-         leftHeader.add(Box.createRigidArea(new Dimension(10, 0)));
-         leftHeader.add(headerLabel);
+        leftHeader.add(Box.createRigidArea(new Dimension(5, 0)));
+        leftHeader.add(collapseBtn);
+        leftHeader.add(Box.createRigidArea(new Dimension(10, 0)));
+        leftHeader.add(headerLabel);
 
     }
 
@@ -112,6 +120,10 @@ public class TableBox extends JPanel {
                 collapseBtn.setBackground(HEADER_BG_COLOR);
             }
         });
+        if (headerStr.endsWith("…")) {
+            // If header is truncated, show the full text on hover
+            headerContainer.setToolTipText(fullHeaderStr);
+        }
 
         headerContainer.add(leftHeader, BorderLayout.WEST);
         add(headerContainer);
@@ -119,7 +131,7 @@ public class TableBox extends JPanel {
     }
 
     void buildItemsContainer() {
-        switch(viewOption) {
+        switch (viewOption) {
             case LIST:
                 int i = 0;
 
