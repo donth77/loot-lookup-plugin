@@ -159,7 +159,9 @@ public class WikiScraper {
             }
 
             rarityStr = row[3];
-            if(rarityStr.startsWith("2 × ") || rarityStr.startsWith("3 × ")) {
+            if (rarityStr.startsWith("~")) {
+                rarityStr = rarityStr.substring(1);
+            } else if(rarityStr.startsWith("2 × ") || rarityStr.startsWith("3 × ")) {
                 rarityStr = rarityStr.substring(4);
             }
 

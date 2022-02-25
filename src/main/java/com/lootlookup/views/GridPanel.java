@@ -10,15 +10,14 @@ import java.awt.*;
 
 public class GridPanel extends JPanel {
 
-    private static final int ITEMS_PER_ROW = 4;
-
     public GridPanel(WikiItem[] items, LootLookupConfig config, JButton percentButton) {
-        final int rowSize = ((items.length % ITEMS_PER_ROW == 0) ? 0 : 1) + items.length / ITEMS_PER_ROW;
-        setLayout(new GridLayout(rowSize, ITEMS_PER_ROW, 0, 0));
+        int itemsPerRow = config.gridRowOption().getValue();
+        final int rowSize = ((items.length % itemsPerRow == 0) ? 0 : 1) + items.length / itemsPerRow;
+        setLayout(new GridLayout(rowSize, itemsPerRow, 0, 0));
         setBorder(new EmptyBorder(0,0,0,0));
 
 
-        for (int i = 0; i < rowSize * ITEMS_PER_ROW; i++) {
+        for (int i = 0; i < rowSize * itemsPerRow; i++) {
             final JPanel slotContainer = new JPanel();
             slotContainer.setLayout(new BoxLayout(slotContainer, BoxLayout.X_AXIS));
 
