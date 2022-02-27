@@ -131,7 +131,7 @@ public class LootLookupPanel extends PluginPanel {
 
         // Percent Button
 
-        buildButton(percentBtn, PERCENT_ICON_FADED, PERCENT_ICON, "Rarity Percentage Off", "Rarity Percentage On", evt -> {
+        buildButton(percentBtn, PERCENT_ICON_FADED, PERCENT_ICON, "Toggle Rarity Percentage", "Toggle Rarity Percentage", evt -> {
             percentBtn.setSelected(!percentBtn.isSelected());
         });
 

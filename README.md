@@ -20,7 +20,7 @@ RuneLite plugin to quickly reference the monster drop tables from OSRS Wiki
 Config
 ------
 
-![config](https://i.imgur.com/aydtQ55.png)
+![config](https://i.imgur.com/cVVmFbC.png)
 #### Default view option
   - Sets the default view option on plugin startup - List or Grid
 ####  Rarity 
@@ -35,6 +35,8 @@ Config
   - Disables links to OSRS Wiki pages for items in List view
 ####  Items per row (Grid only)
   - Sets the number of items displayed in a row in Grid view
+####  Common Color
+  - Color to highlight the rarity of items with a value greater than 1/100
 ####  Rare Color
 - Color to highlight the rarity of items with a value of 1/100 - 1/1000
 ####  Super Rare Color
@@ -75,4 +77,5 @@ v1.1.0
 - Add multiple tabs for monster pages with separate drop tables
 - Improve handling of long names in List view
 - Add config option to choose between 4 or 5 items in Grid view
+- Add config option for common color
 
