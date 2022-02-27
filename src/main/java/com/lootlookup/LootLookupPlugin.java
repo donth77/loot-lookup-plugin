@@ -60,7 +60,8 @@ public class LootLookupPlugin extends Plugin {
                 case "showRarity":
                 case "showQuantity":
                 case "showPrice":
-                case "disableItemsLinks":
+                case "disableItemLinks":
+                case "commonColor":
                 case "rareColor":
                 case "superRareColor":
                 case "priceColor":

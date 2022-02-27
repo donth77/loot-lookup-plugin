@@ -17,7 +17,7 @@ public class GridItem extends JPanel {
     private LootLookupConfig config;
     private JButton percentBtn;
 
-    private String rarityColorStr = Util.colorToHex(Color.white);
+    private String rarityColorStr;
     private String priceColorStr;
 
     private final JPanel container = new JPanel();
@@ -32,6 +32,8 @@ public class GridItem extends JPanel {
         this.percentBtn = percentButton;
 
         priceColorStr = Util.colorToHex(config.priceColor());
+
+        rarityColorStr = Util.colorToHex(config.commonColor());
         if (item.getRarity() > 0) {
             if (item.getRarity() <= 0.01) {
                 rarityColorStr = Util.colorToHex(config.rareColor());
@@ -82,7 +84,7 @@ public class GridItem extends JPanel {
 
     void setTooltipText() {
         setToolTipText("<html>" + item.getName() +
-                (config.showQuantity() ? "<br>" + item.getQuantityLabelText() : "")  +
+                (config.showQuantity() ? "<br>" + item.getQuantityLabelText() : "") +
                 (config.showRarity() ? "<br><font color=\"" + rarityColorStr + "\">" + (item.getRarity() < 0 ? item.getRarityStr() : item.getRarityLabelText(percentBtn.isSelected())) + "</font>" : "") +
                 (config.showPrice() ? "<br><font color=\"" + priceColorStr + "\">" + item.getPriceLabelText() + "</font>" : "") + "</html>");
     }

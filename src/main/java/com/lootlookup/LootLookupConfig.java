@@ -83,9 +83,18 @@ public interface LootLookupConfig extends Config {
         return GridRowOption.FOUR;
     }
 
-
     @ConfigItem(
             position = 7,
+            keyName = "commonColor",
+            name = "Common Color",
+            description = "Color to highlight the rarity of items with a value greater than 1/100"
+    )
+    default Color commonColor() {
+        return DEFAULT_COMMON_COLOR;
+    }
+
+    @ConfigItem(
+            position = 8,
             keyName = "rareColor",
             name = "Rare Color",
             description = "Color to highlight the rarity of items with a value of 1/100 - 1/1000"
@@ -95,7 +104,7 @@ public interface LootLookupConfig extends Config {
     }
 
     @ConfigItem(
-            position = 8,
+            position = 9,
             keyName = "superRareColor",
             name = "Super Rare Color",
             description = "Color to highlight the rarity of items with a value of 1/1000 or less"
@@ -105,7 +114,7 @@ public interface LootLookupConfig extends Config {
     }
 
     @ConfigItem(
-            position = 9,
+            position = 10,
             keyName = "priceColor",
             name = "Price Color",
             description = "Color to highlight item prices"

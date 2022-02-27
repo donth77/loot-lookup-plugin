@@ -83,6 +83,7 @@ public class WikiItemPanel extends JPanel {
         container.add(paddingContainer);
 
         rarityLabel.setFont(FontManager.getRunescapeSmallFont());
+        rarityLabel.setForeground(config.commonColor());
         if (item.getRarity() > 0) {
             if (item.getRarity() <= 0.01) {
                 rarityLabel.setForeground(config.rareColor());
@@ -229,7 +230,7 @@ public class WikiItemPanel extends JPanel {
     void setPriceLabelText() {
         priceLabel.setText("");
         if (config != null && config.showPrice()) {
-            priceLabel.setText((itemName + item.getPriceLabelText()).length() > labelsMaxLength && item.getPrice() > 1000 ? item.getPriceLabelTextShort() : item.getPriceLabelText());
+            priceLabel.setText((itemName + item.getPriceLabelText()).length() > labelsMaxLength && item.getPrice() >= 1000 ? item.getPriceLabelTextShort() : item.getPriceLabelText());
         }
     }
 }
