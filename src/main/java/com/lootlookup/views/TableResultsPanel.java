@@ -31,6 +31,7 @@ public class TableResultsPanel extends JPanel {
     private int selectedTabIndex = 0;
 
     private final JPanel dropTableContent = new JPanel();
+    private final int maxHeaderLength = 31;
 
     public TableResultsPanel(LootLookupConfig config, DropTableSection[] dropTableSections, ViewOption viewOption, JButton collapseButton, JButton percentButton, int selectedTabIndex) {
         this.config = config;
@@ -116,10 +117,18 @@ public class TableResultsPanel extends JPanel {
             dropTableContent.add(Box.createRigidArea(new Dimension(0, 5)));
 
             JPanel labelContainer = new JPanel(new BorderLayout());
+            
+            String dropsHeaderText = selectedSection.getHeader();
+            if (dropsHeaderText.length() > maxHeaderLength) {
+                dropsHeaderText = dropsHeaderText.substring(0, maxHeaderLength) + "…";
+            }
 
-            JLabel sectionHeaderLabel = new JLabel(selectedSection.getHeader());
+            JLabel sectionHeaderLabel = new JLabel(dropsHeaderText);
             sectionHeaderLabel.setFont(FontManager.getRunescapeBoldFont());
             sectionHeaderLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
+            if (dropsHeaderText.endsWith("…")) {
+                sectionHeaderLabel.setToolTipText(selectedSection.getHeader());
+            }
 
             labelContainer.add(sectionHeaderLabel, BorderLayout.WEST);
             dropTableContent.add(labelContainer);

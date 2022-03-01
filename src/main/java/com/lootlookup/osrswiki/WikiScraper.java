@@ -50,10 +50,13 @@ public class WikiScraper {
                 // --- Handle edge cases for specific pages ---
                 if (monsterNameLC.equals("hespori") && tableHeaderText.equals("Main table")) continue;
                 if (monsterNameLC.equals("chaos elemental") && tableHeaderText.equals("Major drops")) continue;
+                if (monsterNameLC.equals("cyclops") && tableHeaderText.equals("Drops")) continue;
                 // ---
 
-                Boolean isDropsTableHeader = tableHeaderText.toLowerCase().contains("drops");
-                Boolean isPickpocketLootHeader = tableHeaderText.toLowerCase().contains("loot");
+                String tableHeaderTextLower = tableHeaderText.toLowerCase();
+                Boolean isDropsTableHeader = tableHeaderTextLower.contains("drops") || isDropsHeaderForEdgeCases(monsterName, tableHeaderText);
+                Boolean isPickpocketLootHeader = tableHeaderTextLower.contains("loot");
+                Boolean parseH3Primary = isPickpocketLootHeader || parseH3PrimaryForEdgeCases(monsterName);
 
                 Elements parentH2 = tableHeader.parent().select("h2");
                 Boolean isParentH2 = !parentH2.isEmpty();
@@ -64,7 +67,7 @@ public class WikiScraper {
                 Elements parentH4 = tableHeader.parent().select("h4");
                 Boolean isParentH4 = !parentH4.isEmpty();
 
-                if (isParentH2 || (isPickpocketLootHeader && isParentH3)) {
+                if (isParentH2 || (parseH3Primary && isParentH3)) {
                     if (!currDropTable.isEmpty()) {
                         // reset section
                         currDropTableSection.setTable(currDropTable);
@@ -77,7 +80,7 @@ public class WikiScraper {
                     if (isDropsTableHeader || isPickpocketLootHeader) {
                         // new section
                         parseDropTableSection = true;
-                        currDropTableSection.setHeader(tableHeader.text());
+                        currDropTableSection.setHeader(tableHeaderText);
                     } else {
                         parseDropTableSection = false;
                     }
@@ -87,8 +90,8 @@ public class WikiScraper {
                     // parse table
                     WikiItem[] tableRows = getTableItems(tableIndex, element + " ~ table.item-drops");
 
-                    if (tableRows.length > 0 && !currDropTable.containsKey(tableHeader.text())) {
-                        currDropTable.put(tableHeader.text(), tableRows);
+                    if (tableRows.length > 0 && !currDropTable.containsKey(tableHeaderText)) {
+                        currDropTable.put(tableHeaderText, tableRows);
                         if (isParentH4) {
                             tableIndexH4++;
                         } else {
@@ -96,6 +99,11 @@ public class WikiScraper {
                         }
                     }
                 }
+            }
+
+            if (!currDropTable.isEmpty()) {
+                currDropTableSection.setTable(currDropTable);
+                dropTableSections.add(currDropTableSection);
             }
 
             if (dropTableSections.isEmpty()) {
@@ -248,6 +256,20 @@ public class WikiScraper {
     public static String sanitizeName(String name) {
         name = name.trim().toLowerCase().replaceAll("\\s+", "_");
         return name.substring(0, 1).toUpperCase() + name.substring(1);
+    }
+
+    public static Boolean isDropsHeaderForEdgeCases(String monsterName, String tableHeaderText) {
+        String monsterNameLC = monsterName.toLowerCase();
+        String tableHeaderTextLower = tableHeaderText.toLowerCase();
+        return monsterNameLC.equals("cyclops") && (
+                tableHeaderTextLower.contains("warriors' guild") ||
+                        tableHeaderText.equals("Ardougne Zoo")
+        );
+    }
+
+    public static Boolean parseH3PrimaryForEdgeCases(String monsterName) {
+        String monsterNameLC = monsterName.toLowerCase();
+        return monsterNameLC.equals("cyclops");
     }
 
     private static CompletableFuture<String> requestAsync(String url) {
