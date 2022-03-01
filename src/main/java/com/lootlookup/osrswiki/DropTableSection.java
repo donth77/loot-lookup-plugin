@@ -7,9 +7,8 @@ public class DropTableSection {
     private Map<String, WikiItem[]> table;
 
     public DropTableSection() {
-        this.header = header;
-        this.table = table;
     }
+
     public DropTableSection(String header, Map<String, WikiItem[]> table) {
         this.header = header;
         this.table = table;

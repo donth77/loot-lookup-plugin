@@ -31,6 +31,7 @@ public class TableResultsPanel extends JPanel {
     private int selectedTabIndex = 0;
 
     private final JPanel dropTableContent = new JPanel();
+    private final int maxHeaderLength = 31;
 
     public TableResultsPanel(LootLookupConfig config, DropTableSection[] dropTableSections, ViewOption viewOption, JButton collapseButton, JButton percentButton, int selectedTabIndex) {
         this.config = config;
@@ -117,9 +118,17 @@ public class TableResultsPanel extends JPanel {
 
             JPanel labelContainer = new JPanel(new BorderLayout());
 
-            JLabel sectionHeaderLabel = new JLabel(selectedSection.getHeader());
+            String dropsHeaderText = selectedSection.getHeader();
+            if (dropsHeaderText.length() > maxHeaderLength) {
+                dropsHeaderText = dropsHeaderText.substring(0, maxHeaderLength) + "…";
+            }
+
+            JLabel sectionHeaderLabel = new JLabel(dropsHeaderText);
             sectionHeaderLabel.setFont(FontManager.getRunescapeBoldFont());
             sectionHeaderLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
+            if (dropsHeaderText.endsWith("…")) {
+                sectionHeaderLabel.setToolTipText(selectedSection.getHeader());
+            }
 
             labelContainer.add(sectionHeaderLabel, BorderLayout.WEST);
             dropTableContent.add(labelContainer);
@@ -144,7 +153,7 @@ public class TableResultsPanel extends JPanel {
     void toggleCollapse() {
         for (TableBox box : boxes) {
             if (!collapseBtn.isSelected()) {
-               box.expand();
+                box.expand();
             } else if (!box.isCollapsed()) {
                 box.collapse();
             }

@@ -79,3 +79,6 @@ v1.1.0
 - Add config option to choose between 4 or 5 items in Grid view
 - Add config option for common color
 
+v1.1.1
+- Fix parsing for Cyclops
+- Fix parsing for some monsters with separate drop table tabs
