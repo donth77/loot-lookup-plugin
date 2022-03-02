@@ -80,5 +80,4 @@ v1.1.0
 - Add config option for common color
 
 v1.1.1
-- Fix parsing for Cyclops
 - Fix parsing for some monsters with separate drop table tabs

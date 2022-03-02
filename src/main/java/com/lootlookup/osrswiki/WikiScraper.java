@@ -51,10 +51,11 @@ public class WikiScraper {
                 if (monsterNameLC.equals("hespori") && tableHeaderText.equals("Main table")) continue;
                 if (monsterNameLC.equals("chaos elemental") && tableHeaderText.equals("Major drops")) continue;
                 if (monsterNameLC.equals("cyclops") && tableHeaderText.equals("Drops")) continue;
+                if (monsterNameLC.equals("gorak") && tableHeaderText.equals("Drops")) continue;
                 // ---
 
                 String tableHeaderTextLower = tableHeaderText.toLowerCase();
-                Boolean isDropsTableHeader = tableHeaderTextLower.contains("drops") || isDropsHeaderForEdgeCases(monsterName, tableHeaderText);
+                Boolean isDropsTableHeader = tableHeaderTextLower.contains("drop") || isDropsHeaderForEdgeCases(monsterName, tableHeaderText);
                 Boolean isPickpocketLootHeader = tableHeaderTextLower.contains("loot");
                 Boolean parseH3Primary = isPickpocketLootHeader || parseH3PrimaryForEdgeCases(monsterName);
 
