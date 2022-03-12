@@ -43,6 +43,8 @@ public class WikiScraper {
             int tableIndexH3 = 0;
             int tableIndexH4 = 0;
 
+            boolean incrementH3Index = false;
+
             for (Element tableHeader : tableHeaders) {
                 String tableHeaderText = tableHeader.text();
                 String monsterNameLC = monsterName.toLowerCase();
@@ -67,6 +69,13 @@ public class WikiScraper {
 
                 Elements parentH4 = tableHeader.parent().select("h4");
                 Boolean isParentH4 = !parentH4.isEmpty();
+
+                // --- Handle edge cases for specific pages ---
+                if (isParentH3 && tableHeaderText.equals("Regular drops")) {
+                    incrementH3Index = true;
+                    continue;
+                };
+                // ---
 
                 if (isParentH2 || (parseH3Primary && isParentH3)) {
                     if (!currDropTable.isEmpty()) {
@@ -95,6 +104,9 @@ public class WikiScraper {
                         currDropTable.put(tableHeaderText, tableRows);
                         if (isParentH4) {
                             tableIndexH4++;
+                            if (incrementH3Index) {
+                                tableIndexH3++;
+                            }
                         } else {
                             tableIndexH3++;
                         }
