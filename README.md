@@ -81,3 +81,6 @@ v1.1.0
 
 v1.1.1
 - Fix parsing for some monsters with separate drop table tabs
+
+v1.1.2
+- Auto select tab corresponding to monster level on right click menu option 

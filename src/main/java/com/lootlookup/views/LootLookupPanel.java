@@ -49,6 +49,8 @@ public class LootLookupPanel extends PluginPanel {
 
     private final PluginErrorPanel errorPanel = new PluginErrorPanel();
 
+    private int targetCombatLevel = 0;
+
     public LootLookupPanel(LootLookupConfig config) {
         this.config = config;
 
@@ -169,7 +171,8 @@ public class LootLookupPanel extends PluginPanel {
         remove(errorPanel);
         SwingUtil.fastRemoveAll(mainPanel);
 
-        tablePanel = new TableResultsPanel(config, dropTableSections, viewOption, collapseBtn, percentBtn, tablePanel != null ? tablePanel.getSelectedIndex() : 0);
+        int defaultSelectedIndex = getSelectedIndexForCombatLevel(targetCombatLevel);
+        tablePanel = new TableResultsPanel(config, dropTableSections, viewOption, collapseBtn, percentBtn, tablePanel != null ? tablePanel.getSelectedIndex() : defaultSelectedIndex);
 
         actionsLeft.add(Box.createRigidArea(new Dimension(5, 0)));
         actionsLeft.add(collapseBtn);
@@ -212,13 +215,13 @@ public class LootLookupPanel extends PluginPanel {
 
         monsterSearchField.addActionListener(
                 evt -> {
-                    searchForMonsterName(monsterSearchField.getText());
+                    searchForMonsterName(monsterSearchField.getText(), 0);
                 });
         monsterSearchField.addMouseListener(
                 new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent evt) {
-                        searchForMonsterName(monsterSearchField.getText());
+                        searchForMonsterName(monsterSearchField.getText(), 0);
                     }
                 });
         monsterSearchField.addClearListener(
@@ -239,8 +242,21 @@ public class LootLookupPanel extends PluginPanel {
         btn.addActionListener(listener);
     }
 
+    int getSelectedIndexForCombatLevel(int combatLevel) {
+        if (combatLevel > 0) {
+            for (int i = 0; i < dropTableSections.length; i++) {
+                DropTableSection section = dropTableSections[i];
+                String headerTextLower = section.getHeader().toLowerCase();
+                if (headerTextLower.contains("level " + combatLevel)) {
+                    return i;
+                }
+            }
+        }
+        return 0;
+    }
 
-    void searchForMonsterName(String monsterName) {
+
+    void searchForMonsterName(String monsterName, int combatLevel) {
         if (monsterName.isEmpty()) return;
 
         monsterSearchField.setEditable(false);
@@ -249,8 +265,9 @@ public class LootLookupPanel extends PluginPanel {
 
         WikiScraper.getDropsByMonsterName(monsterName).whenCompleteAsync((dropTableSections, ex) -> {
             this.dropTableSections = dropTableSections;
-            if(tablePanel != null) {
+            if (tablePanel != null) {
                 tablePanel.resetSelectedIndex();
+                tablePanel.setSelectedIndex(getSelectedIndexForCombatLevel(combatLevel));
             }
             monsterSearchField.setIcon(dropTableSections.length == 0 ? IconTextField.Icon.ERROR : IconTextField.Icon.SEARCH);
             monsterSearchField.setEditable(true);
@@ -272,10 +289,12 @@ public class LootLookupPanel extends PluginPanel {
         });
     }
 
-    public void lookupMonsterDrops(String monsterName) {
+    public void lookupMonsterDrops(String monsterName, int combatLevel) {
+        targetCombatLevel = combatLevel;
+
         SwingUtilities.invokeLater(() -> {
             monsterSearchField.setText(monsterName);
-            searchForMonsterName(monsterName);
+            searchForMonsterName(monsterName, combatLevel);
         });
     }
 

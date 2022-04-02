@@ -267,6 +267,11 @@ public class WikiScraper {
     }
 
     public static String sanitizeName(String name) {
+        // --- Handle edge cases for specific pages ---
+        if(name.equalsIgnoreCase("tzhaar-mej")) {
+            name = "tzhaar-mej (monster)";
+        }
+        // ---
         name = name.trim().toLowerCase().replaceAll("\\s+", "_");
         return name.substring(0, 1).toUpperCase() + name.substring(1);
     }

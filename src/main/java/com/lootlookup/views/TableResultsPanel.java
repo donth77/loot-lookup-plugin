@@ -28,7 +28,7 @@ public class TableResultsPanel extends JPanel {
     private JButton percentButton;
 
     private final List<TableBox> boxes = new ArrayList<>();
-    private int selectedTabIndex = 0;
+    private int selectedTabIndex;
 
     private final JPanel dropTableContent = new JPanel();
     private final int maxHeaderLength = 31;
@@ -174,6 +174,10 @@ public class TableResultsPanel extends JPanel {
 
     void resetSelectedIndex() {
         selectedTabIndex = 0;
+    }
+
+    void setSelectedIndex(int index) {
+        selectedTabIndex = index;
     }
 
 }
