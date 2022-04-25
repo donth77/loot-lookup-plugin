@@ -50,6 +50,7 @@ public class LootLookupPanel extends PluginPanel {
     private final PluginErrorPanel errorPanel = new PluginErrorPanel();
 
     private int targetCombatLevel = 0;
+    private int targetMonsterId = -1;
 
     public LootLookupPanel(LootLookupConfig config) {
         this.config = config;
@@ -147,7 +148,7 @@ public class LootLookupPanel extends PluginPanel {
         externalLinkBtn.setToolTipText("Wiki");
         Util.showHandCursorOnHover(externalLinkBtn);
         externalLinkBtn.addActionListener((evt) -> {
-            String wikiUrl = WikiScraper.getWikiUrlForDrops(monsterSearchField.getText(), tablePanel.getSelectedHeader());
+            String wikiUrl = WikiScraper.getWikiUrlForDrops(monsterSearchField.getText(), tablePanel.getSelectedHeader(), targetMonsterId);
             try {
                 Desktop.getDesktop().browse(new URL(wikiUrl).toURI());
             } catch (Exception e) {
@@ -215,13 +216,13 @@ public class LootLookupPanel extends PluginPanel {
 
         monsterSearchField.addActionListener(
                 evt -> {
-                    searchForMonsterName(monsterSearchField.getText(), 0);
+                    searchForMonsterName(monsterSearchField.getText(), 0, -1);
                 });
         monsterSearchField.addMouseListener(
                 new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent evt) {
-                        searchForMonsterName(monsterSearchField.getText(), 0);
+                        searchForMonsterName(monsterSearchField.getText(), 0, -1);
                     }
                 });
         monsterSearchField.addClearListener(
@@ -247,23 +248,42 @@ public class LootLookupPanel extends PluginPanel {
             for (int i = 0; i < dropTableSections.length; i++) {
                 DropTableSection section = dropTableSections[i];
                 String headerTextLower = section.getHeader().toLowerCase();
-                if (headerTextLower.contains("level " + combatLevel)) {
+                if (headerTextLower.contains(String.valueOf(combatLevel))) {
                     return i;
                 }
+
+                try {
+                    String[] headerTextTokens = headerTextLower.split("\\s+");
+                    for (String token : headerTextTokens) {
+                        if (token.contains("–")) {
+                            String[] rangeTokens = token.split("–");
+                            if (rangeTokens.length > 1 && rangeTokens[0].matches("\\d+") && rangeTokens[1].matches("\\d+")) {
+                                int rangeLow = Integer.parseInt(rangeTokens[0]);
+                                int rangeHigh = Integer.parseInt(rangeTokens[1]);
+
+                                if (combatLevel >= rangeLow && combatLevel <= rangeHigh) {
+                                    return i;
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {}
             }
         }
         return 0;
     }
 
 
-    void searchForMonsterName(String monsterName, int combatLevel) {
+    void searchForMonsterName(String monsterName, int combatLevel, int monsterId) {
         if (monsterName.isEmpty()) return;
 
         monsterSearchField.setEditable(false);
         monsterSearchField.setIcon(IconTextField.Icon.LOADING_DARKER);
 
+        targetCombatLevel = combatLevel;
+        targetMonsterId = monsterId;
 
-        WikiScraper.getDropsByMonsterName(monsterName).whenCompleteAsync((dropTableSections, ex) -> {
+        WikiScraper.getDropsByMonster(monsterName, monsterId).whenCompleteAsync((dropTableSections, ex) -> {
             this.dropTableSections = dropTableSections;
             if (tablePanel != null) {
                 tablePanel.resetSelectedIndex();
@@ -289,12 +309,13 @@ public class LootLookupPanel extends PluginPanel {
         });
     }
 
-    public void lookupMonsterDrops(String monsterName, int combatLevel) {
+    public void lookupMonsterDrops(String monsterName, int combatLevel, int monsterId) {
         targetCombatLevel = combatLevel;
+        targetMonsterId = monsterId;
 
         SwingUtilities.invokeLater(() -> {
             monsterSearchField.setText(monsterName);
-            searchForMonsterName(monsterName, combatLevel);
+            searchForMonsterName(monsterName, combatLevel, monsterId);
         });
     }
 

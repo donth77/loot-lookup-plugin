@@ -87,6 +87,7 @@ public class LootLookupPlugin extends Plugin {
         MenuEntry entryToAppendOn = null;
         String targetMonsterName = "";
         int combatLevel = 0;
+        int monsterId = -1;
 
         for (MenuEntry menuEntry : menuEntries) {
             MenuAction menuType = menuEntry.getType();
@@ -100,6 +101,8 @@ public class LootLookupPlugin extends Plugin {
 
                     if (target != null) {
                         combatLevel = target.getCombatLevel();
+                        monsterId = target.getId();
+
                         if (optionText.equals("Attack") && combatLevel > 0) {
                             isTargetAttackableNPC = true;
                             targetMonsterName = target.getName();
@@ -117,6 +120,8 @@ public class LootLookupPlugin extends Plugin {
 
             String finalTargetMonsterName = targetMonsterName;
             int finalCombatLevel = combatLevel;
+            int finalMonsterId = monsterId;
+            
             client
                     .createMenuEntry(idx + 1)
                     .setOption("Lookup Drops")
@@ -127,7 +132,7 @@ public class LootLookupPlugin extends Plugin {
                     .onClick(
                             evt -> {
                                 selectNavButton();
-                                panel.lookupMonsterDrops(finalTargetMonsterName, finalCombatLevel);
+                                panel.lookupMonsterDrops(finalTargetMonsterName, finalCombatLevel, finalMonsterId);
                             });
         }
     }

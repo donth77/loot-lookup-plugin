@@ -84,3 +84,6 @@ v1.1.1
 
 v1.1.2
 - Auto select tab corresponding to monster level on right click menu option 
+
+v1.1.3
+- Look up monsters based on id on right click menu option

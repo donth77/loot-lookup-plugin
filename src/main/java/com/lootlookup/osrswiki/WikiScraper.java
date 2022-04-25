@@ -17,14 +17,20 @@ import org.jsoup.select.Elements;
 public class WikiScraper {
     private final static String baseUrl = "https://oldschool.runescape.wiki";
     private final static String baseWikiUrl = baseUrl + "/w/";
+    private final static String baseWikiLookupUrl = baseWikiUrl + "Special:Lookup";
 
     public static OkHttpClient client = RuneLiteAPI.CLIENT;
     private static Document doc;
 
-    public static CompletableFuture<DropTableSection[]> getDropsByMonsterName(String monsterName) {
+    public static CompletableFuture<DropTableSection[]> getDropsByMonster(String monsterName, int monsterId) {
         CompletableFuture<DropTableSection[]> future = new CompletableFuture<>();
 
-        String url = getWikiUrl(monsterName);
+        String url;
+        if (monsterId > -1) {
+            url = getWikiUrlWithId(monsterName, monsterId);
+        } else {
+            url = getWikiUrl(monsterName);
+        }
 
         requestAsync(url).whenCompleteAsync((responseHTML, ex) -> {
             List<DropTableSection> dropTableSections = new ArrayList<>();
@@ -54,10 +60,15 @@ public class WikiScraper {
                 if (monsterNameLC.equals("chaos elemental") && tableHeaderText.equals("Major drops")) continue;
                 if (monsterNameLC.equals("cyclops") && tableHeaderText.equals("Drops")) continue;
                 if (monsterNameLC.equals("gorak") && tableHeaderText.equals("Drops")) continue;
+                if (monsterNameLC.equals("undead druid") && tableHeaderText.equals("Seeds")) {
+                    incrementH3Index = true;
+                    continue;
+                }
+                ;
                 // ---
 
                 String tableHeaderTextLower = tableHeaderText.toLowerCase();
-                Boolean isDropsTableHeader = tableHeaderTextLower.contains("drop") || isDropsHeaderForEdgeCases(monsterName, tableHeaderText);
+                Boolean isDropsTableHeader = tableHeaderTextLower.contains("drop") || tableHeaderTextLower.contains("levels") || isDropsHeaderForEdgeCases(monsterName, tableHeaderText);
                 Boolean isPickpocketLootHeader = tableHeaderTextLower.contains("loot");
                 Boolean parseH3Primary = isPickpocketLootHeader || parseH3PrimaryForEdgeCases(monsterName);
 
@@ -70,11 +81,13 @@ public class WikiScraper {
                 Elements parentH4 = tableHeader.parent().select("h4");
                 Boolean isParentH4 = !parentH4.isEmpty();
 
+
                 // --- Handle edge cases for specific pages ---
                 if (isParentH3 && tableHeaderText.equals("Regular drops")) {
                     incrementH3Index = true;
                     continue;
-                };
+                }
+                ;
                 // ---
 
                 if (isParentH2 || (parseH3Primary && isParentH3)) {
@@ -257,7 +270,15 @@ public class WikiScraper {
         return baseWikiUrl + sanitizedName;
     }
 
-    public static String getWikiUrlForDrops(String monsterName, String anchorText) {
+    public static String getWikiUrlWithId(String monsterName, int id) {
+        String sanitizedName = sanitizeName(monsterName);
+        return baseWikiLookupUrl + "?type=npc&id=" + String.valueOf(id) + "&name=" + sanitizedName;
+    }
+
+    public static String getWikiUrlForDrops(String monsterName, String anchorText, int monsterId) {
+        if (monsterId > -1) {
+            return getWikiUrlWithId(monsterName, monsterId);
+        }
         String sanitizedMonsterName = sanitizeName(monsterName);
         String anchorStr = "Drops";
         if (anchorText != null) {
@@ -268,7 +289,7 @@ public class WikiScraper {
 
     public static String sanitizeName(String name) {
         // --- Handle edge cases for specific pages ---
-        if(name.equalsIgnoreCase("tzhaar-mej")) {
+        if (name.equalsIgnoreCase("tzhaar-mej")) {
             name = "tzhaar-mej (monster)";
         }
         // ---
