@@ -50,8 +50,8 @@ Config
 Screenshots
 -----------
 ![Giant Rat](https://i.imgur.com/kOpBmOo.png)
-![Alchemical Hydra - List](https://i.imgur.com/Qi7VV9q.png)
-![Alchemical Hydra - Grid](https://i.imgur.com/60grKG8.png)
+![Alchemical Hydra - List](https://i.imgur.com/sArKJzz.png)
+![Alchemical Hydra - Grid](https://i.imgur.com/lngttYL.png)
 ![Black demon - tabs](https://i.imgur.com/OlSsUHR.png)
 
 ## Future
@@ -82,8 +82,9 @@ v1.1.0
 v1.1.1
 - Fix parsing for some monsters with separate drop table tabs
 
-v1.1.2
-- Auto select tab corresponding to monster level on right click menu option 
-
-v1.1.3
+v1.1.2, v1.1.3
+- Auto select tab corresponding to monster level on right click menu option
 - Look up monsters based on id on right click menu option
+
+v1.1.4
+- Display noted drops with a note image and include "(noted)" text in some cases

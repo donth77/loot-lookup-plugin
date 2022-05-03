@@ -216,7 +216,7 @@ public class WikiScraper {
             NumberFormat nf = NumberFormat.getNumberInstance();
 
             quantityStr = row[2];
-            quantityStr = quantityStr.replaceAll("–", "-").replaceAll("\\(.*\\)", "").trim();
+            quantityStr = quantityStr.replaceAll("–", "-").trim();
             try {
                 String[] quantityStrs = quantityStr.replaceAll("\\s+", "").split("-");
                 String firstQuantityStr = quantityStrs.length > 0 ? quantityStrs[0] : null;

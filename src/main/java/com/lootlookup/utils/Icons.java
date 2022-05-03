@@ -1,8 +1,6 @@
 package com.lootlookup.utils;
 
-import net.runelite.client.plugins.loottracker.LootTrackerPlugin;
 import net.runelite.client.util.ImageUtil;
-
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 
@@ -16,6 +14,8 @@ public class Icons {
     final static BufferedImage externalLinkImgResize = Util.resizeImg(externalLinkImg, 20, 20);
     final static BufferedImage listImg = ImageUtil.loadImageResource(Icons.class, "/list.png");
     final static BufferedImage gridImg = ImageUtil.loadImageResource(Icons.class, "/grid.png");
+
+    public static final BufferedImage noteImg = ImageUtil.loadImageResource(Icons.class, "/Bank_note.png");
 
     public static final ImageIcon COLLAPSE_ICON = new ImageIcon(collapseImg);
     public static final ImageIcon EXPAND_ICON = new ImageIcon(expandedImg);

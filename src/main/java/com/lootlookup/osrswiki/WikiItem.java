@@ -10,7 +10,7 @@ public class WikiItem {
     private String imageUrl;
     private String name;
     private int quantity;
-    private  String quantityStr;
+    private String quantityStr;
     private String rarityStr;
     private double rarity;
     private int price;
@@ -56,13 +56,20 @@ public class WikiItem {
     }
 
     public String getQuantityLabelText() {
-        if (quantityStr.contains("-")) {
+        if (quantityStr.contains("-") || quantityStr.endsWith(" (noted)")) {
             return "x" + quantityStr;
         }
         return quantity > 0 ? "x" + nf.format(quantity) : quantityStr;
     }
 
     public String getQuantityLabelTextShort() {
+        if (quantityStr.endsWith(" (noted)")) {
+            return "x" + quantityStr.replaceAll("\\(.*\\)", "").trim();
+        }
+        return getQuantityValueText();
+    }
+
+    public String getQuantityValueText() {
         return quantity > 0 ? "x" + Util.rsFormat(quantity) : "";
     }
 

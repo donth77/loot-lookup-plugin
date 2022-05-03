@@ -13,6 +13,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 
 public class WikiItemPanel extends JPanel {
@@ -138,7 +139,8 @@ public class WikiItemPanel extends JPanel {
     private void downloadImage(JLabel imageLabel) {
         try {
             Util.downloadImage(this.imageUrl, (image) -> {
-                imageLabel.setIcon(new ImageIcon(image));
+                BufferedImage img = item.getQuantityStr().endsWith(" (noted)") ? Util.getNotedImg(image) : image;
+                imageLabel.setIcon(new ImageIcon(img));
                 imageContainer.setBorder(new EmptyBorder(0, 5, 0, Math.max(30 - image.getWidth(), 5)));
             });
         } catch (Exception error) {

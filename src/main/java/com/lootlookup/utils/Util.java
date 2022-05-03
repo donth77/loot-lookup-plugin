@@ -1,5 +1,7 @@
 package com.lootlookup.utils;
 
+import com.lootlookup.osrswiki.WikiItem;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -11,6 +13,8 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.function.Consumer;
+
+import static com.lootlookup.utils.Icons.noteImg;
 
 public class Util {
     public static void downloadImage(String url, Consumer<BufferedImage> callback) {
@@ -42,6 +46,34 @@ public class Util {
         return dimg;
     }
 
+    public static BufferedImage resizeImgPerc(Object img, int percent) {
+        BufferedImage buff = (BufferedImage) img;
+        return resize(buff, buff.getWidth() * percent / 100, buff.getHeight() * percent / 100);
+    }
+
+    public static BufferedImage resize(BufferedImage img, int newW, int newH) {
+        Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+        BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = dimg.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+        return dimg;
+    }
+
+    public static BufferedImage getNotedImg(BufferedImage image) {
+        BufferedImage target = new BufferedImage(noteImg.getWidth(), noteImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = (Graphics2D) target.getGraphics();
+        g.drawImage(noteImg, 0, 0, null);
+        Boolean isSmallImage = image.getWidth() <= 20;
+        Boolean isWideImage = image.getWidth() >= 28 && image.getHeight() <= 22;
+
+        int drawX = isSmallImage ? 7 : 4 + (isWideImage ? 1 : 0);
+        int drawY = isSmallImage ? 7 : 5 + (isWideImage ? 1 : 0);
+
+        g.drawImage(Util.resizeImgPerc(image, 70), drawX, drawY, null);
+        return target;
+    }
+
     public static void showHandCursorOnHover(Component component) {
         component.addMouseListener(new MouseAdapter() {
             @Override
@@ -57,7 +89,7 @@ public class Util {
     }
 
     public static String colorToHex(Color color) {
-        return "#"+Integer.toHexString(color.getRGB()).substring(2);
+        return "#" + Integer.toHexString(color.getRGB()).substring(2);
     }
 
     public static String rsFormat(double number) {

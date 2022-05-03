@@ -10,6 +10,9 @@ import net.runelite.client.ui.components.IconTextField;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+
+import static com.lootlookup.utils.Icons.noteImg;
 
 public class GridItem extends JPanel {
 
@@ -25,6 +28,7 @@ public class GridItem extends JPanel {
 
     private final Color bgColor = ColorScheme.DARKER_GRAY_COLOR;
 
+    private static int maxQuantityLength = 6;
 
     public GridItem(WikiItem item, LootLookupConfig config, JButton percentButton) {
         this.item = item;
@@ -53,7 +57,8 @@ public class GridItem extends JPanel {
 
         new Thread(() -> {
             Util.downloadImage(item.getImageUrl(), (image) -> {
-                imageLabel.setIcon(new ImageIcon(image));
+                BufferedImage img = item.getQuantityStr().endsWith(" (noted)") ? Util.getNotedImg(image) : image;
+                imageLabel.setIcon(new ImageIcon(img));
             });
         }).start();
 
@@ -61,7 +66,8 @@ public class GridItem extends JPanel {
         bottomText.setBackground(new Color(0, 0, 0, 0));
 
         bottomText.setLayout(new BorderLayout());
-        JLabel quantityLabel = new JLabel(item.getQuantityLabelTextShort());
+        String quantityLabelTextShort = item.getQuantityLabelTextShort();
+        JLabel quantityLabel = new JLabel(quantityLabelTextShort.length() > maxQuantityLength ? item.getQuantityValueText() : quantityLabelTextShort);
 
         quantityLabel.setBackground(bgColor);
         quantityLabel.setFont(FontManager.getRunescapeSmallFont());
