@@ -14,10 +14,11 @@ public class WikiItem {
     private String rarityStr;
     private double rarity;
     private int price;
+    private int highAlchPrice;
 
     NumberFormat nf = NumberFormat.getNumberInstance();
 
-    public WikiItem(String imageUrl, String name, int quantity, String quantityStr, String rarityStr, double rarity, int price) {
+    public WikiItem(String imageUrl, String name, int quantity, String quantityStr, String rarityStr, double rarity, int price, int highAlchPrice) {
         this.imageUrl = imageUrl;
         this.name = name;
         this.quantity = quantity;
@@ -25,6 +26,7 @@ public class WikiItem {
         this.rarityStr = rarityStr;
         this.rarity = rarity;
         this.price = price;
+        this.highAlchPrice = highAlchPrice;
     }
 
     public String getName() {
@@ -47,8 +49,8 @@ public class WikiItem {
         return rarityStr;
     }
 
-    public int getPrice() {
-        return price;
+    public int getPrice(boolean showHighAlch) {
+        return showHighAlch ? highAlchPrice : price;
     }
 
     public String getImageUrl() {
@@ -81,16 +83,18 @@ public class WikiItem {
         return rarityLabelStr;
     }
 
-    public String getPriceLabelText() {
-        String priceLabelStr = price > 0 ? nf.format(price) + "gp" : "Not sold";
+    public String getPriceLabelText(boolean showHighAlch) {
+        int displayedPrice = this.getPrice(showHighAlch);
+        String priceLabelStr = displayedPrice > 0 ? nf.format(displayedPrice) + "gp" : "Not sold";
         if (name.equals("Nothing")) {
             priceLabelStr = "";
         }
         return priceLabelStr;
     }
 
-    public String getPriceLabelTextShort() {
-        String priceLabelStr = price > 0 ? Util.rsFormat(price) : "";
+    public String getPriceLabelTextShort(boolean showHighAlch) {
+        int displayedPrice = this.getPrice(showHighAlch);
+        String priceLabelStr = displayedPrice > 0 ? Util.rsFormat(displayedPrice) : "";
         if (name.equals("Nothing")) {
             priceLabelStr = "";
         }
