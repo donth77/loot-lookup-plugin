@@ -13,20 +13,20 @@ public class WikiItem {
     private String quantityStr;
     private String rarityStr;
     private double rarity;
-    private int price;
-    private int highAlchPrice;
+    private int exchangePrice;
+    private int alchemyPrice;
 
     NumberFormat nf = NumberFormat.getNumberInstance();
 
-    public WikiItem(String imageUrl, String name, int quantity, String quantityStr, String rarityStr, double rarity, int price, int highAlchPrice) {
+    public WikiItem(String imageUrl, String name, int quantity, String quantityStr, String rarityStr, double rarity, int exchangePrice, int alchemyPrice) {
         this.imageUrl = imageUrl;
         this.name = name;
         this.quantity = quantity;
         this.quantityStr = quantityStr;
         this.rarityStr = rarityStr;
         this.rarity = rarity;
-        this.price = price;
-        this.highAlchPrice = highAlchPrice;
+        this.exchangePrice = exchangePrice;
+        this.alchemyPrice = alchemyPrice;
     }
 
     public String getName() {
@@ -48,10 +48,12 @@ public class WikiItem {
     public String getRarityStr() {
         return rarityStr;
     }
-
-    public int getPrice(boolean showHighAlch) {
-        return showHighAlch ? highAlchPrice : price;
+    public int getExchangePrice() {
+        return exchangePrice;
     }
+	public int getAlchemyPrice() {
+		return alchemyPrice;
+	}
 
     public String getImageUrl() {
         return imageUrl;
@@ -82,22 +84,35 @@ public class WikiItem {
         }
         return rarityLabelStr;
     }
+	public String getExchangePriceLabelText() {
+		String priceLabelStr = exchangePrice > 0 ? nf.format(exchangePrice) + "gp" : "Not sold";
+		if (name.equals("Nothing")) {
+			priceLabelStr = "";
+		}
+		return priceLabelStr;
+	}
 
-    public String getPriceLabelText(boolean showHighAlch) {
-        int displayedPrice = this.getPrice(showHighAlch);
-        String priceLabelStr = displayedPrice > 0 ? nf.format(displayedPrice) + "gp" : "Not sold";
-        if (name.equals("Nothing")) {
-            priceLabelStr = "";
-        }
-        return priceLabelStr;
-    }
+	public String getExchangePriceLabelTextShort() {
+		String priceLabelStr = exchangePrice > 0 ? Util.rsFormat(exchangePrice) : "";
+		if (name.equals("Nothing")) {
+			priceLabelStr = "";
+		}
+		return priceLabelStr;
+	}
 
-    public String getPriceLabelTextShort(boolean showHighAlch) {
-        int displayedPrice = this.getPrice(showHighAlch);
-        String priceLabelStr = displayedPrice > 0 ? Util.rsFormat(displayedPrice) : "";
-        if (name.equals("Nothing")) {
-            priceLabelStr = "";
-        }
-        return priceLabelStr;
-    }
+	public String getAlchemyPriceLabelText() {
+		String priceLabelStr = alchemyPrice > 0 ? nf.format(alchemyPrice) + "gp" : "Not sold";
+		if (name.equals("Nothing")) {
+			priceLabelStr = "";
+		}
+		return priceLabelStr;
+	}
+
+	public String getAlchemyPriceLabelTextShort() {
+		String priceLabelStr = alchemyPrice > 0 ? Util.rsFormat(alchemyPrice) : "";
+		if (name.equals("Nothing")) {
+			priceLabelStr = "";
+		}
+		return priceLabelStr;
+	}
 }

@@ -7,14 +7,18 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.lootlookup.utils.Constants;
+import net.runelite.client.game.ItemManager;
+import net.runelite.client.plugins.Plugin;
 import net.runelite.http.api.RuneLiteAPI;
+import net.runelite.http.api.item.ItemPrice;
 import okhttp3.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class WikiScraper {
+public class WikiScraper
+{
     private final static String baseUrl = "https://oldschool.runescape.wiki";
     private final static String baseWikiUrl = baseUrl + "/w/";
     private final static String baseWikiLookupUrl = baseWikiUrl + "Special:Lookup";
@@ -22,7 +26,7 @@ public class WikiScraper {
     public static OkHttpClient client = RuneLiteAPI.CLIENT;
     private static Document doc;
 
-    public static CompletableFuture<DropTableSection[]> getDropsByMonster(String monsterName, int monsterId) {
+	public static CompletableFuture<DropTableSection[]> getDropsByMonster(String monsterName, int monsterId) {
         CompletableFuture<DropTableSection[]> future = new CompletableFuture<>();
 
         String url;
@@ -152,7 +156,6 @@ public class WikiScraper {
         return future;
     }
 
-
     private static WikiItem[] getTableItems(int tableIndex, String selector) {
         List<WikiItem> wikiItems = new ArrayList<>();
         Elements dropTables = doc.select(selector);
@@ -203,8 +206,8 @@ public class WikiScraper {
 
         int quantity = 0;
         String quantityStr = "";
-        int price = -1;
-        int highAlchPrice = -1;
+        int exchangePrice = -1;
+      int alchemyPrice = -1;
 
         if (row.length > 4) {
             imageUrl = row[0];
@@ -254,16 +257,15 @@ public class WikiScraper {
 
 
             try {
-                price = nf.parse(row[4]).intValue();
+                exchangePrice = nf.parse(row[4]).intValue();
             } catch (ParseException ex) {
             }
-
-            try {
-                highAlchPrice = nf.parse(row[5]).intValue();
-            } catch (ParseException ex) {
-            }
+			try {
+				alchemyPrice = nf.parse(row[5]).intValue();
+			} catch (ParseException ex) {
+			}
         }
-        return new WikiItem(imageUrl, name, quantity, quantityStr, rarityStr, rarity, price, highAlchPrice);
+        return new WikiItem(imageUrl, name, quantity, quantityStr, rarityStr, rarity, exchangePrice, alchemyPrice);
     }
 
 

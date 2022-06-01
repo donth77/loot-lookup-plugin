@@ -86,12 +86,10 @@ public class GridItem extends JPanel {
         }
         add(bottomText, BorderLayout.SOUTH);
     }
-
-
     void setTooltipText() {
         setToolTipText("<html>" + item.getName() +
                 (config.showQuantity() ? "<br>" + item.getQuantityLabelText() : "") +
                 (config.showRarity() ? "<br><font color=\"" + rarityColorStr + "\">" + (item.getRarity() < 0 ? item.getRarityStr() : item.getRarityLabelText(percentBtn.isSelected())) + "</font>" : "") +
-                (config.showPrice() ? "<br><font color=\"" + priceColorStr + "\">" + item.getPriceLabelText(config.showHighAlchPrice()) + "</font>" : "") + "</html>");
+                (config.showPrice() ? "<br><font color=\"" + priceColorStr + "\">" + config.priceType().getValue() ? item.getAlchemyPriceLabelText() : item.getExchangePriceLabelText()   + "</font>" : "") + "</html>");
     }
 }

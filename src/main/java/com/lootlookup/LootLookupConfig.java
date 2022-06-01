@@ -2,6 +2,7 @@ package com.lootlookup;
 
 import com.lootlookup.utils.Constants;
 import com.lootlookup.views.GridRowOption;
+import com.lootlookup.views.PriceType;
 import com.lootlookup.views.ViewOption;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -43,15 +44,15 @@ public interface LootLookupConfig extends Config {
         return true;
     }
 
-    @ConfigItem(
-            position = 3,
-            keyName = "showPrice",
-            name = "Price",
-            description = "Show/hide price for item"
-    )
-    default boolean showPrice() {
-        return true;
-    }
+	@ConfigItem(
+		position = 3,
+		keyName = "Price Display",
+		name = "Price display",
+		description = "Select price type for item"
+	)
+	default PriceType priceType() {
+		return PriceType.GE;
+	}
 
     @ConfigItem(
             position = 4,
