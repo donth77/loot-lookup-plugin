@@ -203,6 +203,7 @@ public class WikiItemPanel extends JPanel {
 
         setPriceLabelText();
         priceLabel.setVerticalAlignment(JLabel.CENTER);
+        priceLabel.setHorizontalAlignment(JLabel.RIGHT);
 
 
         rightSidePanel.add(quantityLabel);
