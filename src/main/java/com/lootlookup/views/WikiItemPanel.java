@@ -232,7 +232,7 @@ public class WikiItemPanel extends JPanel {
     void setPriceLabelText() {
         priceLabel.setText("");
         if (config != null && config.showPrice()) {
-            priceLabel.setText((itemName + item.getPriceLabelText()).length() > labelsMaxLength && item.getPrice() >= 1000 ? item.getPriceLabelTextShort() : item.getPriceLabelText());
+            priceLabel.setText((itemName + item.getPriceLabelText(config.showHighAlchPrice())).length() > labelsMaxLength && item.getPrice(config.showHighAlchPrice()) >= 1000 ? item.getPriceLabelTextShort(config.showHighAlchPrice()) : item.getPriceLabelText(config.showHighAlchPrice()));
         }
     }
 }

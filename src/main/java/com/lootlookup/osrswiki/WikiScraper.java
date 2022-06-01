@@ -160,7 +160,7 @@ public class WikiScraper {
         if (dropTables.size() > tableIndex) {
             Elements dropTableRows = dropTables.get(tableIndex).select("tbody tr");
             for (Element dropTableRow : dropTableRows) {
-                String[] lootRow = new String[5];
+                String[] lootRow = new String[6];
                 Elements dropTableCells = dropTableRow.select("td");
                 int index = 1;
 
@@ -175,7 +175,7 @@ public class WikiScraper {
                         }
                     }
 
-                    if (cellContent != null && !cellContent.isEmpty() && index < 5) {
+                    if (cellContent != null && !cellContent.isEmpty() && index < 6) {
                         cellContent = filterTableContent(cellContent);
                         lootRow[index] = cellContent;
                         index++;
@@ -204,6 +204,7 @@ public class WikiScraper {
         int quantity = 0;
         String quantityStr = "";
         int price = -1;
+        int highAlchPrice = -1;
 
         if (row.length > 4) {
             imageUrl = row[0];
@@ -256,8 +257,13 @@ public class WikiScraper {
                 price = nf.parse(row[4]).intValue();
             } catch (ParseException ex) {
             }
+
+            try {
+                highAlchPrice = nf.parse(row[5]).intValue();
+            } catch (ParseException ex) {
+            }
         }
-        return new WikiItem(imageUrl, name, quantity, quantityStr, rarityStr, rarity, price);
+        return new WikiItem(imageUrl, name, quantity, quantityStr, rarityStr, rarity, price, highAlchPrice);
     }
 
 
