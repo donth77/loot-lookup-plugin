@@ -231,8 +231,13 @@ public class WikiItemPanel extends JPanel {
 
     void setPriceLabelText() {
         priceLabel.setText("");
-        if (config != null && config.showPrice()) {
-            priceLabel.setText((itemName + item.getPriceLabelText()).length() > labelsMaxLength && item.getPrice() >= 1000 ? item.getPriceLabelTextShort() : item.getPriceLabelText());
-        }
+		if (config != null && config.priceType().getValue() == 0) {
+			priceLabel.setText((itemName + item.getExchangePriceLabelText()).length() > labelsMaxLength && item.getExchangePrice() >= 1000 ? item.getExchangePriceLabelTextShort() : item.getExchangePriceLabelText());
+		}
+		else if (config != null && config.priceType().getValue() == 1)
+		{
+			priceLabel.setText((itemName + item.getAlchemyPriceLabelText()).length() > labelsMaxLength && item.getAlchemyPrice() >= 1000 ? item.getAlchemyPriceLabelTextShort() : item.getAlchemyPriceLabelText());
+		}
+
     }
 }
