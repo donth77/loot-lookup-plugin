@@ -207,7 +207,7 @@ public class WikiScraper
         int quantity = 0;
         String quantityStr = "";
         int exchangePrice = -1;
-		int alchemyPrice = -1;
+      int alchemyPrice = -1;
 
         if (row.length > 4) {
             imageUrl = row[0];
@@ -260,7 +260,6 @@ public class WikiScraper
                 exchangePrice = nf.parse(row[4]).intValue();
             } catch (ParseException ex) {
             }
-
 			try {
 				alchemyPrice = nf.parse(row[5]).intValue();
 			} catch (ParseException ex) {

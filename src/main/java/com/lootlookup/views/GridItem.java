@@ -86,28 +86,10 @@ public class GridItem extends JPanel {
         }
         add(bottomText, BorderLayout.SOUTH);
     }
-
-
     void setTooltipText() {
-		if (config.priceType().getValue() == 0)
-		{
-			setToolTipText("<html>" + item.getName() +
-				(config.showQuantity() ? "<br>" + item.getQuantityLabelText() : "") +
-				(config.showRarity() ? "<br><font color=\"" + rarityColorStr + "\">" + (item.getRarity() < 0 ? item.getRarityStr() : item.getRarityLabelText(percentBtn.isSelected())) + "</font>" : "") +
-				(config.priceType().getValue() == 0 ? "<br><font color=\"" + priceColorStr + "\">" + item.getExchangePriceLabelText() + "</font>" : "") + "</html>");
-		}
-		else if (config.priceType().getValue() == 1)
-		{
-			setToolTipText("<html>" + item.getName() +
-				(config.showQuantity() ? "<br>" + item.getQuantityLabelText() : "") +
-				(config.showRarity() ? "<br><font color=\"" + rarityColorStr + "\">" + (item.getRarity() < 0 ? item.getRarityStr() : item.getRarityLabelText(percentBtn.isSelected())) + "</font>" : "") +
-				(config.priceType().getValue() == 1 ? "<br><font color=\"" + priceColorStr + "\">" + item.getAlchemyPriceLabelText() + "</font>" : "") + "</html>");
-		}
-		else
-		{
-			setToolTipText("<html>" + item.getName() +
-				(config.showQuantity() ? "<br>" + item.getQuantityLabelText() : "") +
-				(config.showRarity() ? "<br><font color=\"" + rarityColorStr + "\">" + (item.getRarity() < 0 ? item.getRarityStr() : item.getRarityLabelText(percentBtn.isSelected())) + "</font>" : ""));
-		}
+        setToolTipText("<html>" + item.getName() +
+                (config.showQuantity() ? "<br>" + item.getQuantityLabelText() : "") +
+                (config.showRarity() ? "<br><font color=\"" + rarityColorStr + "\">" + (item.getRarity() < 0 ? item.getRarityStr() : item.getRarityLabelText(percentBtn.isSelected())) + "</font>" : "") +
+                (config.showPrice() ? "<br><font color=\"" + priceColorStr + "\">" + config.priceType().getValue() ? item.getAlchemyPriceLabelText() : item.getExchangePriceLabelText()   + "</font>" : "") + "</html>");
     }
 }

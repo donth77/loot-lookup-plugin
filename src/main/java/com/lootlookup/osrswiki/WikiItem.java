@@ -48,7 +48,6 @@ public class WikiItem {
     public String getRarityStr() {
         return rarityStr;
     }
-
     public int getExchangePrice() {
         return exchangePrice;
     }
@@ -85,7 +84,6 @@ public class WikiItem {
         }
         return rarityLabelStr;
     }
-
 	public String getExchangePriceLabelText() {
 		String priceLabelStr = exchangePrice > 0 ? nf.format(exchangePrice) + "gp" : "Not sold";
 		if (name.equals("Nothing")) {
