@@ -44,24 +44,24 @@ public interface LootLookupConfig extends Config {
         return true;
     }
 
-	@ConfigItem(
-		position = 3,
-		keyName = "Price Display",
-		name = "Price display",
-		description = "Select price type for item"
-	)
-	default PriceType priceType() {
-		return PriceType.GE;
-	}
+    @ConfigItem(
+            position = 3,
+            keyName = "showPrice",
+            name = "Show Price",
+            description = "Show/hide price for item"
+    )
+    default boolean showPrice() {
+        return false;
+    }
 
     @ConfigItem(
             position = 4,
-            keyName = "showHighAlchPrice",
-            name = "Show HA Price",
-            description = "Display HA price instead of GE price"
+            keyName = "priceType",
+            name = "Price Type",
+            description = "Select price type for item"
     )
-    default boolean showHighAlchPrice() {
-        return false;
+    default PriceType priceType() {
+        return PriceType.GE;
     }
 
     @ConfigItem(

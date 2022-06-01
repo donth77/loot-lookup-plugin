@@ -20,7 +20,7 @@ RuneLite plugin to quickly reference the monster drop tables from OSRS Wiki
 Config
 ------
 
-![config](https://i.imgur.com/cVVmFbC.png)
+![config](https://i.imgur.com/yLHZlSD.png)
 #### Default view option
   - Sets the default view option on plugin startup - List or Grid
 ####  Rarity 
@@ -29,6 +29,8 @@ Config
   - Show/hide quantity value in the drop tables
 #### Price 
   - Show/hide price value in the drop tables
+#### Price Type
+  - Select price type for item: Grand Exchange or High Alch
 #### Disable Right Click Menu Option
   - Hides the in-game right click menu option that is displayed for attackable NPCs
 ####  Disable Item links (List only)
@@ -88,3 +90,6 @@ v1.1.2, v1.1.3
 
 v1.1.4
 - Display noted drops with a note image and include "(noted)" text in some cases
+
+v1.1.5
+- Add price type option to display GE or HA price

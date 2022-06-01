@@ -84,6 +84,7 @@ public class WikiItem {
         }
         return rarityLabelStr;
     }
+
 	public String getExchangePriceLabelText() {
 		String priceLabelStr = exchangePrice > 0 ? nf.format(exchangePrice) + "gp" : "Not sold";
 		if (name.equals("Nothing")) {
@@ -101,7 +102,7 @@ public class WikiItem {
 	}
 
 	public String getAlchemyPriceLabelText() {
-		String priceLabelStr = alchemyPrice > 0 ? nf.format(alchemyPrice) + "gp" : "Not sold";
+		String priceLabelStr = nf.format(alchemyPrice) + "gp";
 		if (name.equals("Nothing")) {
 			priceLabelStr = "";
 		}
@@ -109,7 +110,7 @@ public class WikiItem {
 	}
 
 	public String getAlchemyPriceLabelTextShort() {
-		String priceLabelStr = alchemyPrice > 0 ? Util.rsFormat(alchemyPrice) : "";
+		String priceLabelStr = alchemyPrice > 0 ? nf.format(alchemyPrice) + "gp" : "";
 		if (name.equals("Nothing")) {
 			priceLabelStr = "";
 		}

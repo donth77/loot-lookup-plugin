@@ -4,8 +4,7 @@ public enum PriceType
 {
 
 	GE(0),
-	HA(1),
-	NONE(2);
+	HA(1);
 
 	private final int value;
 
