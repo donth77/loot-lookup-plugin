@@ -17,8 +17,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class WikiScraper
-{
+public class WikiScraper {
     private final static String baseUrl = "https://oldschool.runescape.wiki";
     private final static String baseWikiUrl = baseUrl + "/w/";
     private final static String baseWikiLookupUrl = baseWikiUrl + "Special:Lookup";
@@ -26,7 +25,7 @@ public class WikiScraper
     public static OkHttpClient client = RuneLiteAPI.CLIENT;
     private static Document doc;
 
-	public static CompletableFuture<DropTableSection[]> getDropsByMonster(String monsterName, int monsterId) {
+    public static CompletableFuture<DropTableSection[]> getDropsByMonster(String monsterName, int monsterId) {
         CompletableFuture<DropTableSection[]> future = new CompletableFuture<>();
 
         String url;
@@ -207,7 +206,7 @@ public class WikiScraper
         int quantity = 0;
         String quantityStr = "";
         int exchangePrice = -1;
-      int alchemyPrice = -1;
+        int alchemyPrice = -1;
 
         if (row.length > 4) {
             imageUrl = row[0];
@@ -260,10 +259,10 @@ public class WikiScraper
                 exchangePrice = nf.parse(row[4]).intValue();
             } catch (ParseException ex) {
             }
-			try {
-				alchemyPrice = nf.parse(row[5]).intValue();
-			} catch (ParseException ex) {
-			}
+            try {
+                alchemyPrice = nf.parse(row[5]).intValue();
+            } catch (ParseException ex) {
+            }
         }
         return new WikiItem(imageUrl, name, quantity, quantityStr, rarityStr, rarity, exchangePrice, alchemyPrice);
     }
@@ -308,10 +307,11 @@ public class WikiScraper
     public static Boolean isDropsHeaderForEdgeCases(String monsterName, String tableHeaderText) {
         String monsterNameLC = monsterName.toLowerCase();
         String tableHeaderTextLower = tableHeaderText.toLowerCase();
-        return monsterNameLC.equals("cyclops") && (
+        return (monsterNameLC.equals("cyclops") && (
                 tableHeaderTextLower.contains("warriors' guild") ||
-                        tableHeaderText.equals("Ardougne Zoo")
-        );
+                        tableHeaderText.equals("Ardougne Zoo")))
+                || (monsterNameLC.equals("vampyre juvinate") &&
+                tableHeaderTextLower.equals("returning a juvinate to human"));
     }
 
     public static Boolean parseH3PrimaryForEdgeCases(String monsterName) {

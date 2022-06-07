@@ -85,7 +85,6 @@ public class LootLookupPlugin extends Plugin {
         MenuEntry[] menuEntries = event.getMenuEntries();
 
         boolean isTargetAttackableNPC = false;
-        MenuEntry entryToAppendOn = null;
         String targetMonsterName = "";
         int combatLevel = 0;
         int monsterId = -1;
@@ -107,15 +106,14 @@ public class LootLookupPlugin extends Plugin {
                         if (optionText.equals("Attack") && combatLevel > 0) {
                             isTargetAttackableNPC = true;
                             targetMonsterName = target.getName();
-                        } else if (optionText.equals("Examine")) {
-                            entryToAppendOn = menuEntry;
                         }
                     }
                 }
             }
         }
 
-        if (isTargetAttackableNPC && entryToAppendOn != null && !config.disableMenuOption()) {
+        if (isTargetAttackableNPC && !config.disableMenuOption()) {
+            MenuEntry entryToAppendOn = menuEntries[menuEntries.length - 1];
 
             int idx = Arrays.asList(menuEntries).indexOf(entryToAppendOn);
 

@@ -66,10 +66,6 @@ Screenshots
 
 If you find any problems or have feedback, please feel free to submit an issue [here](https://github.com/donth77/loot-lookup-plugin/issues)
 
-Credits
--------
-Based on the [Loot Table](https://github.com/Sir-Kyle-Richardson/OSRS-loottable) plugin from Kyle Richardson
-
 ## Changelog
 v1.0
 - Initial release; added to Plugin Hub

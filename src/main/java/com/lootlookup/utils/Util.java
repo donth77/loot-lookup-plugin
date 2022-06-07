@@ -64,11 +64,9 @@ public class Util {
         BufferedImage target = new BufferedImage(noteImg.getWidth(), noteImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = (Graphics2D) target.getGraphics();
         g.drawImage(noteImg, 0, 0, null);
-        Boolean isSmallImage = image.getWidth() <= 20;
-        Boolean isWideImage = image.getWidth() >= 28 && image.getHeight() <= 22;
 
-        int drawX = isSmallImage ? 7 : 4 + (isWideImage ? 1 : 0);
-        int drawY = isSmallImage ? 7 : 5 + (isWideImage ? 1 : 0);
+        int drawX = ((noteImg.getWidth()  - image.getWidth()) / 2) + (image.getWidth() / 7);
+        int drawY = ((noteImg.getHeight()  - image.getHeight()) / 2) + (image.getHeight() / 7);
 
         g.drawImage(Util.resizeImgPerc(image, 70), drawX, drawY, null);
         return target;
