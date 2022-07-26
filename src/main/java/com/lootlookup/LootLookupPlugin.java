@@ -92,7 +92,7 @@ public class LootLookupPlugin extends Plugin {
         for (MenuEntry menuEntry : menuEntries) {
             MenuAction menuType = menuEntry.getType();
 
-            if (menuType == MenuAction.EXAMINE_NPC || menuType == MenuAction.NPC_SECOND_OPTION) {
+            if (menuType == MenuAction.EXAMINE_NPC || menuType == MenuAction.NPC_SECOND_OPTION || menuType == MenuAction.NPC_FIFTH_OPTION) {
                 String optionText = menuEntry.getOption();
                 int id = menuEntry.getIdentifier();
 
@@ -120,7 +120,7 @@ public class LootLookupPlugin extends Plugin {
             String finalTargetMonsterName = targetMonsterName;
             int finalCombatLevel = combatLevel;
             int finalMonsterId = monsterId;
-            
+
             client
                     .createMenuEntry(idx + 1)
                     .setOption("Lookup Drops")

@@ -279,6 +279,13 @@ public class WikiScraper {
 
     public static String getWikiUrlWithId(String monsterName, int id) {
         String sanitizedName = sanitizeName(monsterName);
+        // --- Handle edge cases for specific pages ---
+        if(id == 7851 || id == 7852) {
+            // Redirect Dusk and Dawn to Grotesque Guardians page
+            id = -1;
+            sanitizedName = "Grotesque_Guardians";
+        }
+        // ---
         return baseWikiLookupUrl + "?type=npc&id=" + String.valueOf(id) + "&name=" + sanitizedName;
     }
 
@@ -298,6 +305,9 @@ public class WikiScraper {
         // --- Handle edge cases for specific pages ---
         if (name.equalsIgnoreCase("tzhaar-mej")) {
             name = "tzhaar-mej (monster)";
+        }
+        if(name.equalsIgnoreCase("dusk") || name.equalsIgnoreCase("dawn")) {
+            name = "grotesque guardians";
         }
         // ---
         name = name.trim().toLowerCase().replaceAll("\\s+", "_");

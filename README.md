@@ -60,7 +60,6 @@ Screenshots
 
 - Filter drop table sections
 - Sort each section individually by item name, quantity, rarity, and price
-- Replace OSRS Wiki scraping with [OSRSBox](https://www.osrsbox.com/) data pending [#161](https://github.com/osrsbox/osrsbox-db/issues/161)
 
 ## Issues
 
@@ -77,10 +76,8 @@ v1.1.0
 - Add config option to choose between 4 or 5 items in Grid view
 - Add config option for common color
 
-v1.1.1
+v1.1.1 - v1.1.3
 - Fix parsing for some monsters with separate drop table tabs
-
-v1.1.2, v1.1.3
 - Auto select tab corresponding to monster level on right click menu option
 - Look up monsters based on id on right click menu option
 
