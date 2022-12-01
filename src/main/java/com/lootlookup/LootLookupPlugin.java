@@ -122,7 +122,7 @@ public class LootLookupPlugin extends Plugin {
             int finalMonsterId = monsterId;
 
             client
-                    .createMenuEntry(idx + 1)
+                    .createMenuEntry(idx - 1)
                     .setOption("Lookup Drops")
                     .setTarget(entryToAppendOn.getTarget())
                     .setIdentifier(entryToAppendOn.getIdentifier())
