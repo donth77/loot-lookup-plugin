@@ -68,7 +68,7 @@ public class WikiItem {
 
     public String getQuantityLabelTextShort() {
         if (quantityStr.endsWith(" (noted)")) {
-            return "x" + quantityStr.replaceAll("\\(.*\\)", "").trim();
+            return "x" + quantityStr.replaceAll("\\(.*\\)", "(n)").trim();
         }
         return getQuantityValueText();
     }
@@ -103,7 +103,7 @@ public class WikiItem {
 
 	public String getAlchemyPriceLabelText() {
 		String priceLabelStr = nf.format(alchemyPrice) + "gp";
-		if (name.equals("Nothing")) {
+		if (name.equals("Nothing") || alchemyPrice < 0) {
 			priceLabelStr = "";
 		}
 		return priceLabelStr;
@@ -111,7 +111,7 @@ public class WikiItem {
 
 	public String getAlchemyPriceLabelTextShort() {
 		String priceLabelStr = alchemyPrice > 0 ? nf.format(alchemyPrice) + "gp" : "";
-		if (name.equals("Nothing")) {
+        if (name.equals("Nothing") || alchemyPrice < 0) {
 			priceLabelStr = "";
 		}
 		return priceLabelStr;

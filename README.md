@@ -48,18 +48,12 @@ Config
 
 
 
-
 Screenshots
 -----------
 ![Giant Rat](https://i.imgur.com/kOpBmOo.png)
 ![Alchemical Hydra - List](https://i.imgur.com/sArKJzz.png)
 ![Alchemical Hydra - Grid](https://i.imgur.com/lngttYL.png)
 ![Black demon - tabs](https://i.imgur.com/OlSsUHR.png)
-
-## Future
-
-- Filter drop table sections
-- Sort each section individually by item name, quantity, rarity, and price
 
 ## Issues
 
