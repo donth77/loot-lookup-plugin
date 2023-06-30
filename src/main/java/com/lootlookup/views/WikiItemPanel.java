@@ -27,7 +27,6 @@ public class WikiItemPanel extends JPanel {
 
     private final Color bgColor = ColorScheme.DARKER_GRAY_COLOR;
     private final Color hoverColor = bgColor.brighter();
-    private final Color transparentColor = new Color(0,0,0,0);
 
     private final JLabel rarityLabel = new JLabel();
     private final JLabel priceLabel = new JLabel();
@@ -77,8 +76,7 @@ public class WikiItemPanel extends JPanel {
 
         JPanel leftPanel = buildLeftPanel();
         JPanel rightPanel = buildRightPanel();
-        leftPanel.setBackground(transparentColor);
-        rightPanel.setBackground(transparentColor);
+        rightPanel.setBackground(bgColor);
 
         paddingContainer.add(leftPanel, BorderLayout.WEST);
         paddingContainer.add(rightPanel, BorderLayout.EAST);
@@ -115,6 +113,8 @@ public class WikiItemPanel extends JPanel {
                 public void mouseEntered(MouseEvent evt) {
                     setBackground(hoverColor);
                     paddingContainer.setBackground(hoverColor);
+                    leftSidePanel.setBackground(hoverColor);
+                    rightPanel.setBackground(hoverColor);
                     imageContainer.setBackground(hoverColor);
                 }
 
@@ -122,6 +122,8 @@ public class WikiItemPanel extends JPanel {
                 public void mouseExited(MouseEvent evt) {
                     setBackground(bgColor);
                     paddingContainer.setBackground(bgColor);
+                    leftSidePanel.setBackground(bgColor);
+                    rightPanel.setBackground(bgColor);
                     imageContainer.setBackground(bgColor);
                 }
             });
@@ -167,7 +169,7 @@ public class WikiItemPanel extends JPanel {
         JPanel itemImage = buildImagePanel();
 
         leftSidePanel.setBorder(new EmptyBorder(2, 2, 2, 2));
-        leftSidePanel.setBackground(transparentColor);
+        leftSidePanel.setBackground(bgColor);
 
         JLabel itemNameLabel = new JLabel(itemName);
         itemNameLabel.setBorder(new EmptyBorder(0, 0, 3, 0));
