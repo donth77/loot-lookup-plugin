@@ -12,8 +12,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import static com.lootlookup.utils.Icons.noteImg;
-
 public class GridItem extends JPanel {
 
     private WikiItem item;

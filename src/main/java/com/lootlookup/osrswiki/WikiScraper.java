@@ -7,10 +7,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.lootlookup.utils.Constants;
-import net.runelite.client.game.ItemManager;
-import net.runelite.client.plugins.Plugin;
-import net.runelite.http.api.RuneLiteAPI;
-import net.runelite.http.api.item.ItemPrice;
 import okhttp3.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -22,8 +18,10 @@ public class WikiScraper {
     private final static String baseWikiUrl = baseUrl + "/w/";
     private final static String baseWikiLookupUrl = baseWikiUrl + "Special:Lookup";
 
-    public static OkHttpClient client = RuneLiteAPI.CLIENT;
     private static Document doc;
+
+    private static OkHttpClient client = new OkHttpClient();
+
 
     public static CompletableFuture<DropTableSection[]> getDropsByMonster(String monsterName, int monsterId) {
         CompletableFuture<DropTableSection[]> future = new CompletableFuture<>();
