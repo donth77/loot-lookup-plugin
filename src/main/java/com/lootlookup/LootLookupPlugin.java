@@ -145,9 +145,7 @@ public class LootLookupPlugin extends Plugin {
     public void selectNavButton() {
         SwingUtilities.invokeLater(
                 () -> {
-                    if (!navButton.isSelected()) {
-                        navButton.getOnSelect().run();
-                    }
+                    clientToolbar.openPanel(navButton);
                 });
     }
 }

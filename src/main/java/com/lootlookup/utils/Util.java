@@ -1,7 +1,5 @@
 package com.lootlookup.utils;
 
-import com.lootlookup.osrswiki.WikiItem;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
