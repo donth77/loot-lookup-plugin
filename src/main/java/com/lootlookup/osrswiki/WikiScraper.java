@@ -20,10 +20,7 @@ public class WikiScraper {
 
     private static Document doc;
 
-    private static OkHttpClient client = new OkHttpClient();
-
-
-    public static CompletableFuture<DropTableSection[]> getDropsByMonster(String monsterName, int monsterId) {
+    public static CompletableFuture<DropTableSection[]> getDropsByMonster(OkHttpClient okHttpClient, String monsterName, int monsterId) {
         CompletableFuture<DropTableSection[]> future = new CompletableFuture<>();
 
         String url;
@@ -33,7 +30,7 @@ public class WikiScraper {
             url = getWikiUrl(monsterName);
         }
 
-        requestAsync(url).whenCompleteAsync((responseHTML, ex) -> {
+        requestAsync(okHttpClient, url).whenCompleteAsync((responseHTML, ex) -> {
             List<DropTableSection> dropTableSections = new ArrayList<>();
 
             if (ex != null) {
@@ -327,12 +324,12 @@ public class WikiScraper {
         return monsterNameLC.equals("cyclops");
     }
 
-    private static CompletableFuture<String> requestAsync(String url) {
+    private static CompletableFuture<String> requestAsync(OkHttpClient okHttpClient, String url) {
         CompletableFuture<String> future = new CompletableFuture<>();
 
         Request request = new Request.Builder().url(url).header("User-Agent", Constants.USER_AGENT).build();
 
-        client
+        okHttpClient
                 .newCall(request)
                 .enqueue(
                         new Callback() {

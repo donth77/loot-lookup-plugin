@@ -18,6 +18,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
+import okhttp3.OkHttpClient;
 
 @PluginDescriptor(
         name = Constants.PLUGIN_NAME
@@ -29,13 +30,15 @@ public class LootLookupPlugin extends Plugin {
     private ClientToolbar clientToolbar;
     @Inject
     private LootLookupConfig config;
+    @Inject
+    public OkHttpClient okHttpClient;
 
     private LootLookupPanel panel;
     private NavigationButton navButton;
 
     @Override
     protected void startUp() {
-        panel = new LootLookupPanel(config);
+        panel = new LootLookupPanel(config, okHttpClient);
 
         navButton =
                 NavigationButton.builder()

@@ -10,6 +10,7 @@ import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
 import net.runelite.client.ui.components.PluginErrorPanel;
 import net.runelite.client.util.SwingUtil;
+import okhttp3.OkHttpClient;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
@@ -23,6 +24,7 @@ import static com.lootlookup.utils.Icons.*;
 
 public class LootLookupPanel extends PluginPanel {
     private LootLookupConfig config;
+    private OkHttpClient okHttpClient;
     private TableResultsPanel tablePanel;
     private DropTableSection[] dropTableSections;
     private ViewOption viewOption = ViewOption.LIST;
@@ -52,8 +54,9 @@ public class LootLookupPanel extends PluginPanel {
     private int targetCombatLevel = 0;
     private int targetMonsterId = -1;
 
-    public LootLookupPanel(LootLookupConfig config) {
+    public LootLookupPanel(LootLookupConfig config, OkHttpClient okHttpClient) {
         this.config = config;
+        this.okHttpClient = okHttpClient;
 
         if (config != null) {
             viewOption = config.viewOption();
@@ -283,7 +286,7 @@ public class LootLookupPanel extends PluginPanel {
         targetCombatLevel = combatLevel;
         targetMonsterId = monsterId;
 
-        WikiScraper.getDropsByMonster(monsterName, monsterId).whenCompleteAsync((dropTableSections, ex) -> {
+        WikiScraper.getDropsByMonster(okHttpClient, monsterName, monsterId).whenCompleteAsync((dropTableSections, ex) -> {
             this.dropTableSections = dropTableSections;
             if (tablePanel != null) {
                 tablePanel.resetSelectedIndex();
