@@ -84,7 +84,7 @@ public class LootLookupPlugin extends Plugin {
      */
     @Subscribe
     public void onMenuOpened(MenuOpened event) {
-        final NPC[] cachedNPCs = client.getCachedNPCs();
+        final NPC[] cachedNPCs = client.getTopLevelWorldView().npcs().getSparse();
         MenuEntry[] menuEntries = event.getMenuEntries();
 
         boolean isTargetAttackableNPC = false;
