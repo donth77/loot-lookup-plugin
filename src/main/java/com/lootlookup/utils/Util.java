@@ -6,6 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -17,17 +18,24 @@ import static com.lootlookup.utils.Icons.noteImg;
 public class Util {
     public static void downloadImage(String url, Consumer<BufferedImage> callback) {
         HttpURLConnection connection = null;
+        InputStream is = null;
         try {
             connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setRequestProperty("User-Agent", Constants.USER_AGENT);
             connection.connect();
-            BufferedImage image = ImageIO.read(connection.getInputStream());
+            is = connection.getInputStream();
+            BufferedImage image = ImageIO.read(is);
             connection.disconnect();
-
             callback.accept(image);
         } catch (IOException e) {
             if (connection != null) {
                 connection.disconnect();
+            }
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {}
             }
         }
     }
