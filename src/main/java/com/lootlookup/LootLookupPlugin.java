@@ -84,7 +84,7 @@ public class LootLookupPlugin extends Plugin {
      */
     @Subscribe
     public void onMenuOpened(MenuOpened event) {
-        final NPC[] cachedNPCs = client.getCachedNPCs();
+        final var npcs = client.getTopLevelWorldView().npcs();
         MenuEntry[] menuEntries = event.getMenuEntries();
 
         boolean isTargetAttackableNPC = false;
@@ -99,17 +99,20 @@ public class LootLookupPlugin extends Plugin {
                 String optionText = menuEntry.getOption();
                 int id = menuEntry.getIdentifier();
 
-                if (id < cachedNPCs.length) {
-                    NPC target = cachedNPCs[id];
+                NPC target;
+                try {
+                    target = npcs.byIndex(id);
+                } catch (ArrayIndexOutOfBoundsException ignored) {
+                    continue;
+                }
 
-                    if (target != null) {
-                        combatLevel = target.getCombatLevel();
-                        monsterId = target.getId();
+                if (target != null) {
+                    combatLevel = target.getCombatLevel();
+                    monsterId = target.getId();
 
-                        if (optionText.equals("Attack") && combatLevel > 0) {
-                            isTargetAttackableNPC = true;
-                            targetMonsterName = target.getName();
-                        }
+                    if (optionText.equals("Attack") && combatLevel > 0) {
+                        isTargetAttackableNPC = true;
+                        targetMonsterName = target.getName();
                     }
                 }
             }
