@@ -176,7 +176,7 @@ public class LootLookupPanel extends PluginPanel {
         SwingUtil.fastRemoveAll(mainPanel);
 
         int defaultSelectedIndex = getSelectedIndexForCombatLevel(targetCombatLevel);
-        tablePanel = new TableResultsPanel(config, dropTableSections, viewOption, collapseBtn, percentBtn, tablePanel != null ? tablePanel.getSelectedIndex() : defaultSelectedIndex);
+        tablePanel = new TableResultsPanel(config, okHttpClient, dropTableSections, viewOption, collapseBtn, percentBtn, tablePanel != null ? tablePanel.getSelectedIndex() : defaultSelectedIndex);
 
         actionsLeft.add(Box.createRigidArea(new Dimension(5, 0)));
         actionsLeft.add(collapseBtn);

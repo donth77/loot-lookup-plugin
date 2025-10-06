@@ -1,4 +1,4 @@
-package com.lootlookup.osrswiki;
+    package com.lootlookup.osrswiki;
 
 import com.lootlookup.utils.Util;
 

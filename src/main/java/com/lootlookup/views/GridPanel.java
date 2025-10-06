@@ -3,6 +3,7 @@ package com.lootlookup.views;
 import com.lootlookup.LootLookupConfig;
 import com.lootlookup.osrswiki.WikiItem;
 import net.runelite.client.ui.ColorScheme;
+import okhttp3.OkHttpClient;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -10,7 +11,10 @@ import java.awt.*;
 
 public class GridPanel extends JPanel {
 
-    public GridPanel(WikiItem[] items, LootLookupConfig config, JButton percentButton) {
+    private final OkHttpClient okHttpClient;
+
+    public GridPanel(WikiItem[] items, LootLookupConfig config, JButton percentButton, OkHttpClient okHttpClient) {
+        this.okHttpClient = okHttpClient;
         int itemsPerRow = config.gridRowOption().getValue();
         final int rowSize = ((items.length % itemsPerRow == 0) ? 0 : 1) + items.length / itemsPerRow;
         setLayout(new GridLayout(rowSize, itemsPerRow, 0, 0));
@@ -23,7 +27,7 @@ public class GridPanel extends JPanel {
 
             if(i < items.length) {
                 slotContainer.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-                slotContainer.add(new GridItem(items[i], config, percentButton));
+                slotContainer.add(new GridItem(items[i], config, percentButton, okHttpClient));
                 slotContainer.add(Box.createRigidArea(new Dimension(1,0)));
                 slotContainer.setBorder(BorderFactory.createLineBorder(ColorScheme.DARK_GRAY_COLOR, 1));
             }
