@@ -29,7 +29,6 @@ public class Util {
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                System.out.println("Failed to download image: " + url);
                 e.printStackTrace();
             }
 
@@ -37,7 +36,6 @@ public class Util {
             public void onResponse(Call call, Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful()) {
-                        System.out.println("HTTP Error " + response.code() + " for: " + url);
                         return;
                     }
                     
