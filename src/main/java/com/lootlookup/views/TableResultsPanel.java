@@ -9,6 +9,7 @@ import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
 import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
 import net.runelite.client.util.SwingUtil;
+import okhttp3.OkHttpClient;
 
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
@@ -22,6 +23,7 @@ import java.util.Map;
 
 public class TableResultsPanel extends JPanel {
     private LootLookupConfig config;
+    private final OkHttpClient okHttpClient;
     private DropTableSection[] dropTableSections;
     private ViewOption viewOption;
     private JButton collapseBtn;
@@ -33,8 +35,9 @@ public class TableResultsPanel extends JPanel {
     private final JPanel dropTableContent = new JPanel();
     private final int maxHeaderLength = 31;
 
-    public TableResultsPanel(LootLookupConfig config, DropTableSection[] dropTableSections, ViewOption viewOption, JButton collapseButton, JButton percentButton, int selectedTabIndex) {
+    public TableResultsPanel(LootLookupConfig config, OkHttpClient okHttpClient, DropTableSection[] dropTableSections, ViewOption viewOption, JButton collapseButton, JButton percentButton, int selectedTabIndex) {
         this.config = config;
+        this.okHttpClient = okHttpClient;
         this.dropTableSections = dropTableSections;
         this.viewOption = viewOption;
         this.collapseBtn = collapseButton;
@@ -142,7 +145,7 @@ public class TableResultsPanel extends JPanel {
 
         for (Map.Entry<String, WikiItem[]> entry : dropTables.entrySet()) {
             String tableHeader = entry.getKey();
-            TableBox tableBox = new TableBox(config, entry.getValue(), viewOption, tableHeader, percentButton);
+            TableBox tableBox = new TableBox(config, okHttpClient, entry.getValue(), viewOption, tableHeader, percentButton);
             boxes.add(tableBox);
 
             dropTableContent.add(tableBox);

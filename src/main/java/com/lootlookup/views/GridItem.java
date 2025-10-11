@@ -6,6 +6,7 @@ import com.lootlookup.utils.Util;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.components.IconTextField;
+import okhttp3.OkHttpClient;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -28,7 +29,7 @@ public class GridItem extends JPanel {
 
     private static int maxQuantityLength = 6;
 
-    public GridItem(WikiItem item, LootLookupConfig config, JButton percentButton) {
+    public GridItem(WikiItem item, LootLookupConfig config, JButton percentButton, OkHttpClient okHttpClient) {
         this.item = item;
         this.config = config;
         this.percentBtn = percentButton;
@@ -53,12 +54,11 @@ public class GridItem extends JPanel {
         setBorder(new EmptyBorder(1, 0, 0, 0));
         setLayout(new BorderLayout());
 
-        new Thread(() -> {
-            Util.downloadImage(item.getImageUrl(), (image) -> {
-                BufferedImage img = item.getQuantityStr().endsWith(" (noted)") ? Util.getNotedImg(image) : image;
-                imageLabel.setIcon(new ImageIcon(img));
-            });
-        }).start();
+        // Updated to use OkHttpClient
+        Util.downloadImage(okHttpClient, item.getImageUrl(), (image) -> {
+            BufferedImage img = item.getQuantityStr().endsWith(" (noted)") ? Util.getNotedImg(image) : image;
+            imageLabel.setIcon(new ImageIcon(img));
+        });
 
         JPanel bottomText = new JPanel();
         bottomText.setBackground(new Color(0, 0, 0, 0));

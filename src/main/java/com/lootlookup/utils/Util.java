@@ -1,14 +1,16 @@
 package com.lootlookup.utils;
 
+import net.runelite.client.RuneLite;
+import okhttp3.*;
+
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.function.Consumer;
@@ -16,28 +18,38 @@ import java.util.function.Consumer;
 import static com.lootlookup.utils.Icons.noteImg;
 
 public class Util {
-    public static void downloadImage(String url, Consumer<BufferedImage> callback) {
-        HttpURLConnection connection = null;
-        InputStream is = null;
-        try {
-            connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.setRequestProperty("User-Agent", Constants.USER_AGENT);
-            connection.connect();
-            is = connection.getInputStream();
-            BufferedImage image = ImageIO.read(is);
-            connection.disconnect();
-            callback.accept(image);
-        } catch (IOException e) {
-            if (connection != null) {
-                connection.disconnect();
+    public static void downloadImage(OkHttpClient okHttpClient, String url, Consumer<BufferedImage> callback) {
+        Request request = new Request.Builder()
+            .url(url)
+            .header("User-Agent", Constants.USER_AGENT)
+            .header("Accept", "image/webp,image/apng,image/*,*/*;q=0.8")
+            .header("Referer", "https://oldschool.runescape.wiki/")
+            .build();
+
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println("Failed to download image: " + url);
+                e.printStackTrace();
             }
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {}
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                    if (!response.isSuccessful()) {
+                        System.out.println("HTTP Error " + response.code() + " for: " + url);
+                        return;
+                    }
+                    
+                    try (InputStream is = responseBody.byteStream()) {
+                        BufferedImage image = ImageIO.read(is);
+                        if (image != null) {
+                            SwingUtilities.invokeLater(() -> callback.accept(image));
+                        }
+                    }
+                }
             }
-        }
+        });
     }
 
     public static BufferedImage resizeImg(BufferedImage img, int newW, int newH) {

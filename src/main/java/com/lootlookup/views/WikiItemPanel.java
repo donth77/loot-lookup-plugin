@@ -7,6 +7,7 @@ import com.lootlookup.utils.Util;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.components.IconTextField;
+import okhttp3.OkHttpClient;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -18,6 +19,7 @@ import java.net.URL;
 
 public class WikiItemPanel extends JPanel {
     private LootLookupConfig config;
+    private final OkHttpClient okHttpClient;
 
     private WikiItem item;
     private String imageUrl;
@@ -37,12 +39,13 @@ public class WikiItemPanel extends JPanel {
     private static int maxNameLength = 22;
     private static int labelsMaxLength = 25;
 
-    public WikiItemPanel(WikiItem item, LootLookupConfig config, boolean showSeparator, JButton percentButton) {
+    public WikiItemPanel(WikiItem item, LootLookupConfig config, boolean showSeparator, OkHttpClient okHttpClient, JButton percentButton) {
         this.item = item;
         this.config = config;
 
         this.imageUrl = item.getImageUrl();
         this.itemName = item.getName();
+        this.okHttpClient = okHttpClient;
 
         this.percentBtn = percentButton;
 
@@ -138,12 +141,13 @@ public class WikiItemPanel extends JPanel {
 
     private void downloadImage(JLabel imageLabel) {
         try {
-            Util.downloadImage(this.imageUrl, (image) -> {
+            Util.downloadImage(this.okHttpClient, this.imageUrl, (image) -> {
                 BufferedImage img = item.getQuantityStr().endsWith(" (noted)") ? Util.getNotedImg(image) : image;
                 imageLabel.setIcon(new ImageIcon(img));
                 imageContainer.setBorder(new EmptyBorder(0, 5, 0, Math.max(30 - image.getWidth(), 5)));
             });
         } catch (Exception error) {
+            error.printStackTrace();
         }
     }
 

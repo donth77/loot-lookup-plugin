@@ -6,6 +6,7 @@ import com.lootlookup.utils.Util;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.util.SwingUtil;
+import okhttp3.OkHttpClient;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
@@ -20,6 +21,7 @@ import static com.lootlookup.utils.Icons.EXPAND_ICON;
 
 public class TableBox extends JPanel {
     private LootLookupConfig config;
+    private final OkHttpClient okHttpClient;
 
     private WikiItem[] items;
     private ViewOption viewOption;
@@ -39,8 +41,9 @@ public class TableBox extends JPanel {
     private final List<WikiItemPanel> itemPanels = new ArrayList<>();
     private static int maxHeaderLength = 28;
 
-    public TableBox(LootLookupConfig config, WikiItem[] items, ViewOption viewOption, String headerStr, JButton percentButton) {
+    public TableBox(LootLookupConfig config, OkHttpClient okHttpClient, WikiItem[] items, ViewOption viewOption, String headerStr, JButton percentButton) {
         this.config = config;
+        this.okHttpClient = okHttpClient;
         this.items = items;
         this.fullHeaderStr = headerStr;
         this.headerStr = headerStr;
@@ -136,7 +139,7 @@ public class TableBox extends JPanel {
                 int i = 0;
 
                 for (WikiItem item : items) {
-                    WikiItemPanel itemPanel = new WikiItemPanel(item, config, i > 0, percentBtn);
+                    WikiItemPanel itemPanel = new WikiItemPanel(item, config, i > 0, this.okHttpClient, percentBtn);
                     itemPanels.add(itemPanel);
                     listViewContainer.add(itemPanel);
                     i++;
@@ -146,7 +149,7 @@ public class TableBox extends JPanel {
                 add(listViewContainer);
                 break;
             case GRID:
-                gridViewPanel = new GridPanel(items, config, percentBtn);
+                gridViewPanel = new GridPanel(items, config, percentBtn, okHttpClient);
                 add(gridViewPanel);
                 break;
         }
