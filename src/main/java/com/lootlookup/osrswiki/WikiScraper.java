@@ -7,12 +7,14 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.lootlookup.utils.Constants;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+@Slf4j
 public class WikiScraper {
     private final static String baseUrl = "https://oldschool.runescape.wiki";
     private final static String baseWikiUrl = baseUrl + "/w/";
@@ -20,7 +22,8 @@ public class WikiScraper {
 
     private static Document doc;
 
-    public static CompletableFuture<DropTableSection[]> getDropsByMonster(OkHttpClient okHttpClient, String monsterName, int monsterId) {
+    public static CompletableFuture<DropTableSection[]> getDropsByMonster(OkHttpClient okHttpClient, String monsterName,
+            int monsterId) {
         CompletableFuture<DropTableSection[]> future = new CompletableFuture<>();
 
         String url;
@@ -30,16 +33,23 @@ public class WikiScraper {
             url = getWikiUrl(monsterName);
         }
 
+        log.info("Looking up drops for monster: '{}' (ID: {}) at URL: {}", monsterName, monsterId, url);
+
         requestAsync(okHttpClient, url).whenCompleteAsync((responseHTML, ex) -> {
             List<DropTableSection> dropTableSections = new ArrayList<>();
 
             if (ex != null) {
+                log.error("HTTP request failed for monster '{}': {}", monsterName, ex.getMessage(), ex);
                 DropTableSection[] result = new DropTableSection[0];
                 future.complete(result);
+                return;
             }
 
             doc = Jsoup.parse(responseHTML);
-            Elements tableHeaders = doc.select("h2 span.mw-headline, h3 span.mw-headline, h4 span.mw-headline");
+
+            // Wiki structure: Headers are now direct h2/h3/h4 elements (no longer wrapped
+            // in span.mw-headline)
+            Elements tableHeaders = doc.select("h2, h3, h4");
 
             Boolean parseDropTableSection = false;
             DropTableSection currDropTableSection = new DropTableSection();
@@ -54,10 +64,14 @@ public class WikiScraper {
                 String monsterNameLC = monsterName.toLowerCase();
 
                 // --- Handle edge cases for specific pages ---
-                if (monsterNameLC.equals("hespori") && tableHeaderText.equals("Main table")) continue;
-                if (monsterNameLC.equals("chaos elemental") && tableHeaderText.equals("Major drops")) continue;
-                if (monsterNameLC.equals("cyclops") && tableHeaderText.equals("Drops")) continue;
-                if (monsterNameLC.equals("gorak") && tableHeaderText.equals("Drops")) continue;
+                if (monsterNameLC.equals("hespori") && tableHeaderText.equals("Main table"))
+                    continue;
+                if (monsterNameLC.equals("chaos elemental") && tableHeaderText.equals("Major drops"))
+                    continue;
+                if (monsterNameLC.equals("cyclops") && tableHeaderText.equals("Drops"))
+                    continue;
+                if (monsterNameLC.equals("gorak") && tableHeaderText.equals("Drops"))
+                    continue;
                 if (monsterNameLC.equals("undead druid") && tableHeaderText.equals("Seeds")) {
                     incrementH3Index = true;
                     continue;
@@ -66,19 +80,17 @@ public class WikiScraper {
                 // ---
 
                 String tableHeaderTextLower = tableHeaderText.toLowerCase();
-                Boolean isDropsTableHeader = tableHeaderTextLower.contains("drop") || tableHeaderTextLower.contains("levels") || isDropsHeaderForEdgeCases(monsterName, tableHeaderText);
+                Boolean isDropsTableHeader = tableHeaderTextLower.contains("drop")
+                        || tableHeaderTextLower.contains("levels")
+                        || isDropsHeaderForEdgeCases(monsterName, tableHeaderText);
                 Boolean isPickpocketLootHeader = tableHeaderTextLower.contains("loot");
                 Boolean parseH3Primary = isPickpocketLootHeader || parseH3PrimaryForEdgeCases(monsterName);
 
-                Elements parentH2 = tableHeader.parent().select("h2");
-                Boolean isParentH2 = !parentH2.isEmpty();
-
-                Elements parentH3 = tableHeader.parent().select("h3");
-                Boolean isParentH3 = !parentH3.isEmpty();
-
-                Elements parentH4 = tableHeader.parent().select("h4");
-                Boolean isParentH4 = !parentH4.isEmpty();
-
+                // Since we're selecting h2/h3/h4 directly now, check the element's tag name
+                String tagName = tableHeader.tagName().toLowerCase();
+                Boolean isParentH2 = tagName.equals("h2");
+                Boolean isParentH3 = tagName.equals("h3");
+                Boolean isParentH4 = tagName.equals("h4");
 
                 // --- Handle edge cases for specific pages ---
                 if (isParentH3 && tableHeaderText.equals("Regular drops")) {
@@ -106,10 +118,41 @@ public class WikiScraper {
                         parseDropTableSection = false;
                     }
                 } else if (parseDropTableSection && (isParentH3 || isParentH4)) {
-                    String element = isParentH4 ? "h4" : "h3";
-                    int tableIndex = isParentH4 ? tableIndexH4 : tableIndexH3;
-                    // parse table
-                    WikiItem[] tableRows = getTableItems(tableIndex, element + " ~ table.item-drops");
+                    // Headers are wrapped in <div class="mw-heading mw-headingN">
+                    // We need to search from the wrapper div's siblings, not the header's siblings
+                    Element searchStart = tableHeader;
+                    Element parent = tableHeader.parent();
+                    if (parent != null && parent.hasClass("mw-heading")) {
+                        searchStart = parent;
+                    }
+
+                    // Find the next table.item-drops after this header's container
+                    Element searchElement = searchStart.nextElementSibling();
+                    Element foundTable = null;
+                    int searchDepth = 0;
+
+                    while (searchElement != null && searchDepth < 5) {
+
+                        if (searchElement.tagName().equals("table") && searchElement.hasClass("item-drops")) {
+                            foundTable = searchElement;
+                            break;
+                        }
+
+                        // Check if table is inside this element (e.g., wrapped in a div)
+                        Elements tablesInside = searchElement.select("table.item-drops");
+                        if (!tablesInside.isEmpty()) {
+                            foundTable = tablesInside.first();
+                            break;
+                        }
+
+                        searchElement = searchElement.nextElementSibling();
+                        searchDepth++;
+                    }
+
+                    WikiItem[] tableRows = new WikiItem[0];
+                    if (foundTable != null) {
+                        tableRows = getTableItemsFromElement(foundTable);
+                    }
 
                     if (tableRows.length > 0 && !currDropTable.containsKey(tableHeaderText)) {
                         currDropTable.put(tableHeaderText, tableRows);
@@ -144,6 +187,15 @@ public class WikiScraper {
             }
 
             DropTableSection[] result = dropTableSections.toArray(new DropTableSection[dropTableSections.size()]);
+
+            if (result.length == 0) {
+                log.warn(
+                        "No drop tables found for monster '{}' (ID: {}). Check if the wiki page exists or has a different format.",
+                        monsterName, monsterId);
+            } else {
+                log.info("Found {} drop table section(s) for monster '{}'", result.length, monsterName);
+            }
+
             future.complete(result);
         });
 
@@ -186,6 +238,42 @@ public class WikiScraper {
             }
         }
 
+        WikiItem[] result = new WikiItem[wikiItems.size()];
+        return wikiItems.toArray(result);
+    }
+
+    private static WikiItem[] getTableItemsFromElement(Element table) {
+        List<WikiItem> wikiItems = new ArrayList<>();
+        Elements dropTableRows = table.select("tbody tr");
+
+        for (Element dropTableRow : dropTableRows) {
+            String[] lootRow = new String[6];
+            Elements dropTableCells = dropTableRow.select("td");
+            int index = 1;
+
+            for (Element dropTableCell : dropTableCells) {
+                String cellContent = dropTableCell.text();
+                Elements images = dropTableCell.select("img");
+
+                if (images.size() != 0) {
+                    String imageSource = images.first().attr("src");
+                    if (!imageSource.isEmpty()) {
+                        lootRow[0] = baseUrl + imageSource;
+                    }
+                }
+
+                if (cellContent != null && !cellContent.isEmpty() && index < 6) {
+                    cellContent = filterTableContent(cellContent);
+                    lootRow[index] = cellContent;
+                    index++;
+                }
+            }
+
+            if (lootRow[0] != null) {
+                WikiItem wikiItem = parseRow(lootRow);
+                wikiItems.add(wikiItem);
+            }
+        }
 
         WikiItem[] result = new WikiItem[wikiItems.size()];
         return wikiItems.toArray(result);
@@ -249,7 +337,6 @@ public class WikiScraper {
             } catch (ParseException ex) {
             }
 
-
             try {
                 exchangePrice = nf.parse(row[4]).intValue();
             } catch (ParseException ex) {
@@ -261,7 +348,6 @@ public class WikiScraper {
         }
         return new WikiItem(imageUrl, name, quantity, quantityStr, rarityStr, rarity, exchangePrice, alchemyPrice);
     }
-
 
     public static String filterTableContent(String cellContent) {
         return cellContent.replaceAll("\\[.*\\]", "");
@@ -275,7 +361,7 @@ public class WikiScraper {
     public static String getWikiUrlWithId(String monsterName, int id) {
         String sanitizedName = sanitizeName(monsterName);
         // --- Handle edge cases for specific pages ---
-        if(id == 7851 || id == 7852) {
+        if (id == 7851 || id == 7852) {
             // Redirect Dusk and Dawn to Grotesque Guardians page
             id = -1;
             sanitizedName = "Grotesque_Guardians";
@@ -301,7 +387,7 @@ public class WikiScraper {
         if (name.equalsIgnoreCase("tzhaar-mej")) {
             name = "tzhaar-mej (monster)";
         }
-        if(name.equalsIgnoreCase("dusk") || name.equalsIgnoreCase("dawn")) {
+        if (name.equalsIgnoreCase("dusk") || name.equalsIgnoreCase("dawn")) {
             name = "grotesque guardians";
         }
         // ---
@@ -312,11 +398,10 @@ public class WikiScraper {
     public static Boolean isDropsHeaderForEdgeCases(String monsterName, String tableHeaderText) {
         String monsterNameLC = monsterName.toLowerCase();
         String tableHeaderTextLower = tableHeaderText.toLowerCase();
-        return (monsterNameLC.equals("cyclops") && (
-                tableHeaderTextLower.contains("warriors' guild") ||
-                        tableHeaderText.equals("Ardougne Zoo")))
+        return (monsterNameLC.equals("cyclops") && (tableHeaderTextLower.contains("warriors' guild") ||
+                tableHeaderText.equals("Ardougne Zoo")))
                 || (monsterNameLC.equals("vampyre juvinate") &&
-                tableHeaderTextLower.equals("returning a juvinate to human"));
+                        tableHeaderTextLower.equals("returning a juvinate to human"));
     }
 
     public static Boolean parseH3PrimaryForEdgeCases(String monsterName) {
@@ -335,14 +420,21 @@ public class WikiScraper {
                         new Callback() {
                             @Override
                             public void onFailure(Call call, IOException ex) {
+                                log.error("HTTP call failed for URL '{}': {}", url, ex.getMessage(), ex);
                                 future.completeExceptionally(ex);
                             }
 
                             @Override
                             public void onResponse(Call call, Response response) throws IOException {
                                 try (ResponseBody responseBody = response.body()) {
-                                    if (!response.isSuccessful()) future.complete("");
+                                    if (!response.isSuccessful()) {
+                                        log.warn("HTTP request unsuccessful. Status code: {} for URL: {}",
+                                                response.code(), url);
+                                        future.complete("");
+                                        return;
+                                    }
 
+                                    log.debug("HTTP request successful (status {})", response.code());
                                     future.complete(responseBody.string());
                                 } finally {
                                     response.close();
