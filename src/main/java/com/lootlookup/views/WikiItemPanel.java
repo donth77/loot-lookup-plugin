@@ -1,5 +1,7 @@
 package com.lootlookup.views;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.lootlookup.LootLookupConfig;
 import com.lootlookup.osrswiki.WikiItem;
 import com.lootlookup.osrswiki.WikiScraper;
@@ -17,6 +19,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 
+@Slf4j
 public class WikiItemPanel extends JPanel {
     private LootLookupConfig config;
     private final OkHttpClient okHttpClient;
@@ -147,7 +150,7 @@ public class WikiItemPanel extends JPanel {
                 imageContainer.setBorder(new EmptyBorder(0, 5, 0, Math.max(30 - image.getWidth(), 5)));
             });
         } catch (Exception error) {
-            error.printStackTrace();
+            log.error("Failed to download item image", error);
         }
     }
 

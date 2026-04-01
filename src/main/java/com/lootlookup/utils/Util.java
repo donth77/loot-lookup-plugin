@@ -1,5 +1,7 @@
 package com.lootlookup.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import net.runelite.client.RuneLite;
 import okhttp3.*;
 
@@ -17,6 +19,7 @@ import java.util.function.Consumer;
 
 import static com.lootlookup.utils.Icons.noteImg;
 
+@Slf4j
 public class Util {
     public static void downloadImage(OkHttpClient okHttpClient, String url, Consumer<BufferedImage> callback) {
         Request request = new Request.Builder()
@@ -29,7 +32,7 @@ public class Util {
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
+                log.error("Failed to download image", e);
             }
 
             @Override

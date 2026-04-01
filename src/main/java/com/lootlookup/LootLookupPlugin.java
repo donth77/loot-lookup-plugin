@@ -20,9 +20,7 @@ import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import okhttp3.OkHttpClient;
 
-@PluginDescriptor(
-        name = Constants.PLUGIN_NAME
-)
+@PluginDescriptor(name = Constants.PLUGIN_NAME)
 public class LootLookupPlugin extends Plugin {
     @Inject
     private Client client;
@@ -40,13 +38,12 @@ public class LootLookupPlugin extends Plugin {
     protected void startUp() {
         panel = new LootLookupPanel(config, okHttpClient);
 
-        navButton =
-                NavigationButton.builder()
-                        .tooltip(Constants.PLUGIN_NAME)
-                        .icon(Icons.NAV_BUTTON)
-                        .priority(Constants.DEFAULT_PRIORITY)
-                        .panel(panel)
-                        .build();
+        navButton = NavigationButton.builder()
+                .tooltip(Constants.PLUGIN_NAME)
+                .icon(Icons.NAV_BUTTON)
+                .priority(Constants.DEFAULT_PRIORITY)
+                .panel(panel)
+                .build();
 
         clientToolbar.addNavigation(navButton);
     }
@@ -95,7 +92,12 @@ public class LootLookupPlugin extends Plugin {
         for (MenuEntry menuEntry : menuEntries) {
             MenuAction menuType = menuEntry.getType();
 
-            if (menuType == MenuAction.EXAMINE_NPC || menuType == MenuAction.NPC_SECOND_OPTION || menuType == MenuAction.NPC_FIFTH_OPTION) {
+            if (menuType == MenuAction.EXAMINE_NPC
+                    || menuType == MenuAction.NPC_FIRST_OPTION
+                    || menuType == MenuAction.NPC_SECOND_OPTION
+                    || menuType == MenuAction.NPC_THIRD_OPTION
+                    || menuType == MenuAction.NPC_FOURTH_OPTION
+                    || menuType == MenuAction.NPC_FIFTH_OPTION) {
                 String optionText = menuEntry.getOption();
                 int id = menuEntry.getIdentifier();
 
@@ -128,6 +130,7 @@ public class LootLookupPlugin extends Plugin {
             int finalMonsterId = monsterId;
 
             client
+                    .getMenu()
                     .createMenuEntry(idx - 1)
                     .setOption("Lookup Drops")
                     .setTarget(entryToAppendOn.getTarget())
@@ -141,7 +144,6 @@ public class LootLookupPlugin extends Plugin {
                             });
         }
     }
-
 
     @Provides
     LootLookupConfig provideConfig(ConfigManager configManager) {
