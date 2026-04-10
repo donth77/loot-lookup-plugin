@@ -76,6 +76,16 @@ public interface LootLookupConfig extends Config {
 
     @ConfigItem(
             position = 6,
+            keyName = "excludedMonsters",
+            name = "Excluded monsters",
+            description = "Comma-separated list of NPC names or IDs to hide the right-click menu option for. Names are matched case insensitive and must be singular (e.g. \"Dust devil\", not \"Dust devils\")."
+    )
+    default String excludedMonsters() {
+        return "";
+    }
+
+    @ConfigItem(
+            position = 7,
             keyName = "disableItemLinks",
             name = "Disable Item links (List only)",
             description = "Disable links to OSRS Wiki page for item"
@@ -85,7 +95,7 @@ public interface LootLookupConfig extends Config {
     }
 
     @ConfigItem(
-            position = 7,
+            position = 8,
             keyName = "gridRowOption",
             name = "Items per row (Grid only)",
             description = "Number of items displayed in a grid row"
@@ -95,7 +105,7 @@ public interface LootLookupConfig extends Config {
     }
 
     @ConfigItem(
-            position = 8,
+            position = 9,
             keyName = "commonColor",
             name = "Common Color",
             description = "Color to highlight the rarity of items with a value greater than 1/100"
@@ -105,7 +115,7 @@ public interface LootLookupConfig extends Config {
     }
 
     @ConfigItem(
-            position = 9,
+            position = 10,
             keyName = "rareColor",
             name = "Rare Color",
             description = "Color to highlight the rarity of items with a value of 1/100 - 1/1000"
@@ -115,7 +125,7 @@ public interface LootLookupConfig extends Config {
     }
 
     @ConfigItem(
-            position = 10,
+            position = 11,
             keyName = "superRareColor",
             name = "Super Rare Color",
             description = "Color to highlight the rarity of items with a value of 1/1000 or less"
@@ -125,7 +135,7 @@ public interface LootLookupConfig extends Config {
     }
 
     @ConfigItem(
-            position = 11,
+            position = 12,
             keyName = "priceColor",
             name = "Price Color",
             description = "Color to highlight item prices"

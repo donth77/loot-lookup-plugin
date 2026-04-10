@@ -123,7 +123,7 @@ public class LootLookupPlugin extends Plugin {
             }
         }
 
-        if (shouldShowLookup && !config.disableMenuOption()) {
+        if (shouldShowLookup && !config.disableMenuOption() && !isMonsterExcluded(targetMonsterName, monsterId)) {
             MenuEntry entryToAppendOn = menuEntries[menuEntries.length - 1];
 
             int idx = Arrays.asList(menuEntries).indexOf(entryToAppendOn);
@@ -146,6 +146,24 @@ public class LootLookupPlugin extends Plugin {
                                 panel.lookupMonsterDrops(finalTargetMonsterName, finalCombatLevel, finalMonsterId);
                             });
         }
+    }
+
+    private boolean isMonsterExcluded(String name, int id) {
+        String excluded = config.excludedMonsters();
+        if (excluded == null || excluded.trim().isEmpty()) {
+            return false;
+        }
+        String idStr = String.valueOf(id);
+        for (String entry : excluded.split(",")) {
+            String trimmed = entry.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            if (trimmed.equalsIgnoreCase(name) || trimmed.equals(idStr)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Provides
