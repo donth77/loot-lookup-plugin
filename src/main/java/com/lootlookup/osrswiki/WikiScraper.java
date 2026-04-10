@@ -86,7 +86,18 @@ public class WikiScraper {
                         || tableHeaderTextLower.contains("pickpocket")
                         || isDropsHeaderForEdgeCases(monsterName, tableHeaderText);
                 Boolean isPickpocketLootHeader = tableHeaderTextLower.contains("loot");
-                Boolean parseH3Primary = isPickpocketLootHeader || parseH3PrimaryForEdgeCases(monsterName);
+                // An h3 whose heading is a variant "X drops" label (e.g.
+                // "Wilderness Slayer Cave drops" on Jelly) is promoted to a
+                // new primary section so its h4 children get a fresh map and
+                // don't collide with an earlier variant's sub-table keys.
+                // Only promote once the current section already has entries,
+                // so a leading h3 like Chaos Elemental's "Minor drops" stays
+                // as a sub-table of the parent h2.
+                Boolean isSubDropsSection = tableHeaderTextLower.endsWith(" drops")
+                        || tableHeaderTextLower.equals("drops");
+                Boolean parseH3Primary = isPickpocketLootHeader
+                        || (isSubDropsSection && !currDropTable.isEmpty())
+                        || parseH3PrimaryForEdgeCases(monsterName);
 
                 // Since we're selecting h2/h3/h4 directly now, check the element's tag name
                 String tagName = tableHeader.tagName().toLowerCase();
@@ -116,40 +127,23 @@ public class WikiScraper {
                         // new section
                         parseDropTableSection = true;
                         currDropTableSection.setHeader(tableHeaderText);
+
+                        // Some pages (e.g. Elf (Thieving)) put a single flat
+                        // item-drops table directly under the section heading
+                        // with no h4 sub-headings. Look for one here so it
+                        // doesn't get silently dropped.
+                        Element directTable = findNextDropTable(tableHeader);
+                        if (directTable != null) {
+                            WikiItem[] directRows = getTableItemsFromElement(directTable);
+                            if (directRows.length > 0 && !currDropTable.containsKey(tableHeaderText)) {
+                                currDropTable.put(tableHeaderText, directRows);
+                            }
+                        }
                     } else {
                         parseDropTableSection = false;
                     }
                 } else if (parseDropTableSection && (isParentH3 || isParentH4)) {
-                    // Headers are wrapped in <div class="mw-heading mw-headingN">
-                    // We need to search from the wrapper div's siblings, not the header's siblings
-                    Element searchStart = tableHeader;
-                    Element parent = tableHeader.parent();
-                    if (parent != null && parent.hasClass("mw-heading")) {
-                        searchStart = parent;
-                    }
-
-                    // Find the next table.item-drops after this header's container
-                    Element searchElement = searchStart.nextElementSibling();
-                    Element foundTable = null;
-                    int searchDepth = 0;
-
-                    while (searchElement != null && searchDepth < 5) {
-
-                        if (searchElement.tagName().equals("table") && searchElement.hasClass("item-drops")) {
-                            foundTable = searchElement;
-                            break;
-                        }
-
-                        // Check if table is inside this element (e.g., wrapped in a div)
-                        Elements tablesInside = searchElement.select("table.item-drops");
-                        if (!tablesInside.isEmpty()) {
-                            foundTable = tablesInside.first();
-                            break;
-                        }
-
-                        searchElement = searchElement.nextElementSibling();
-                        searchDepth++;
-                    }
+                    Element foundTable = findNextDropTable(tableHeader);
 
                     WikiItem[] tableRows = new WikiItem[0];
                     if (foundTable != null) {
@@ -202,6 +196,47 @@ public class WikiScraper {
         });
 
         return future;
+    }
+
+    /**
+     * Walks forward up to 5 siblings from a section heading looking for the
+     * next {@code table.item-drops}. Stops when it hits another heading wrapper
+     * so the search can't wander into a sibling section and mis-attribute
+     * that section's table to the current heading.
+     */
+    private static Element findNextDropTable(Element tableHeader) {
+        // Headers are wrapped in <div class="mw-heading mw-headingN">
+        // We need to search from the wrapper div's siblings, not the header's siblings
+        Element searchStart = tableHeader;
+        Element parent = tableHeader.parent();
+        if (parent != null && parent.hasClass("mw-heading")) {
+            searchStart = parent;
+        }
+
+        Element searchElement = searchStart.nextElementSibling();
+        int searchDepth = 0;
+        while (searchElement != null && searchDepth < 5) {
+            if (searchElement.hasClass("mw-heading")) {
+                return null;
+            }
+            String tag = searchElement.tagName().toLowerCase();
+            if (tag.equals("h2") || tag.equals("h3") || tag.equals("h4")) {
+                return null;
+            }
+
+            if (tag.equals("table") && searchElement.hasClass("item-drops")) {
+                return searchElement;
+            }
+
+            Elements tablesInside = searchElement.select("table.item-drops");
+            if (!tablesInside.isEmpty()) {
+                return tablesInside.first();
+            }
+
+            searchElement = searchElement.nextElementSibling();
+            searchDepth++;
+        }
+        return null;
     }
 
     private static WikiItem[] getTableItems(int tableIndex, String selector) {
