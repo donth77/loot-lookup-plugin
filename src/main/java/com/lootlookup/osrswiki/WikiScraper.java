@@ -83,6 +83,7 @@ public class WikiScraper {
                 Boolean isDropsTableHeader = tableHeaderTextLower.contains("drop")
                         || tableHeaderTextLower.contains("levels")
                         || tableHeaderTextLower.contains("reward")
+                        || tableHeaderTextLower.contains("pickpocket")
                         || isDropsHeaderForEdgeCases(monsterName, tableHeaderText);
                 Boolean isPickpocketLootHeader = tableHeaderTextLower.contains("loot");
                 Boolean parseH3Primary = isPickpocketLootHeader || parseH3PrimaryForEdgeCases(monsterName);

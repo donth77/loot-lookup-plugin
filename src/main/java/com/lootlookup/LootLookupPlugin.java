@@ -75,7 +75,8 @@ public class LootLookupPlugin extends Plugin {
     }
 
     /**
-     * Insert option adjacent to "Examine" when target is attackable NPC
+     * Insert option adjacent to "Examine" when target is an attackable or
+     * pickpocketable NPC.
      *
      * @param event
      */
@@ -84,7 +85,7 @@ public class LootLookupPlugin extends Plugin {
         final var npcs = client.getTopLevelWorldView().npcs();
         MenuEntry[] menuEntries = event.getMenuEntries();
 
-        boolean isTargetAttackableNPC = false;
+        boolean shouldShowLookup = false;
         String targetMonsterName = "";
         int combatLevel = 0;
         int monsterId = -1;
@@ -112,15 +113,17 @@ public class LootLookupPlugin extends Plugin {
                     combatLevel = target.getCombatLevel();
                     monsterId = target.getId();
 
-                    if (optionText.equals("Attack") && combatLevel > 0) {
-                        isTargetAttackableNPC = true;
+                    boolean isAttack = optionText.equals("Attack") && combatLevel > 0;
+                    boolean isPickpocket = optionText.equals("Pickpocket");
+                    if (isAttack || isPickpocket) {
+                        shouldShowLookup = true;
                         targetMonsterName = target.getName();
                     }
                 }
             }
         }
 
-        if (isTargetAttackableNPC && !config.disableMenuOption()) {
+        if (shouldShowLookup && !config.disableMenuOption()) {
             MenuEntry entryToAppendOn = menuEntries[menuEntries.length - 1];
 
             int idx = Arrays.asList(menuEntries).indexOf(entryToAppendOn);
