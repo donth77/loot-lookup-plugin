@@ -290,7 +290,9 @@ public class WikiScraper {
         int quantity = 0;
         String quantityStr = "";
         int exchangePrice = -1;
+        String exchangePriceStr = null;
         int alchemyPrice = -1;
+        String alchemyPriceStr = null;
 
         if (row.length > 4) {
             imageUrl = row[0];
@@ -338,16 +340,22 @@ public class WikiScraper {
             } catch (ParseException ex) {
             }
 
+            if (row[4] != null) {
+                exchangePriceStr = row[4].replaceAll("–", "-").replace('\u00A0', ' ').trim();
+            }
             try {
                 exchangePrice = nf.parse(row[4]).intValue();
             } catch (ParseException ex) {
+            }
+            if (row[5] != null) {
+                alchemyPriceStr = row[5].replaceAll("–", "-").replace('\u00A0', ' ').trim();
             }
             try {
                 alchemyPrice = nf.parse(row[5]).intValue();
             } catch (ParseException ex) {
             }
         }
-        return new WikiItem(imageUrl, name, quantity, quantityStr, rarityStr, rarity, exchangePrice, alchemyPrice);
+        return new WikiItem(imageUrl, name, quantity, quantityStr, rarityStr, rarity, exchangePrice, exchangePriceStr, alchemyPrice, alchemyPriceStr);
     }
 
     public static String filterTableContent(String cellContent) {

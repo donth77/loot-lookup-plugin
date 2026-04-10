@@ -14,11 +14,13 @@ public class WikiItem {
     private String rarityStr;
     private double rarity;
     private int exchangePrice;
+    private String exchangePriceStr;
     private int alchemyPrice;
+    private String alchemyPriceStr;
 
     NumberFormat nf = NumberFormat.getNumberInstance();
 
-    public WikiItem(String imageUrl, String name, int quantity, String quantityStr, String rarityStr, double rarity, int exchangePrice, int alchemyPrice) {
+    public WikiItem(String imageUrl, String name, int quantity, String quantityStr, String rarityStr, double rarity, int exchangePrice, String exchangePriceStr, int alchemyPrice, String alchemyPriceStr) {
         this.imageUrl = imageUrl;
         this.name = name;
         this.quantity = quantity;
@@ -26,7 +28,9 @@ public class WikiItem {
         this.rarityStr = rarityStr;
         this.rarity = rarity;
         this.exchangePrice = exchangePrice;
+        this.exchangePriceStr = exchangePriceStr;
         this.alchemyPrice = alchemyPrice;
+        this.alchemyPriceStr = alchemyPriceStr;
     }
 
     public String getName() {
@@ -100,6 +104,14 @@ public class WikiItem {
 		return priceLabelStr;
 	}
 
+	public String getExchangePriceLabelTextFull() {
+		if (!name.equals("Nothing") && exchangePriceStr != null
+				&& (exchangePriceStr.contains("-") || exchangePriceStr.contains(";"))) {
+			return exchangePriceStr + "gp";
+		}
+		return getExchangePriceLabelText();
+	}
+
 	public String getExchangePriceLabelTextShort() {
 		String priceLabelStr = exchangePrice > 0 ? Util.rsFormat(exchangePrice) : "";
 		if (name.equals("Nothing")) {
@@ -114,6 +126,14 @@ public class WikiItem {
 			priceLabelStr = "";
 		}
 		return priceLabelStr;
+	}
+
+	public String getAlchemyPriceLabelTextFull() {
+		if (!name.equals("Nothing") && alchemyPrice >= 0 && alchemyPriceStr != null
+				&& (alchemyPriceStr.contains("-") || alchemyPriceStr.contains(";"))) {
+			return alchemyPriceStr + "gp";
+		}
+		return getAlchemyPriceLabelText();
 	}
 
 	public String getAlchemyPriceLabelTextShort() {

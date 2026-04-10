@@ -88,7 +88,7 @@ public class GridItem extends JPanel {
         add(bottomText, BorderLayout.SOUTH);
     }
     void setTooltipText() {
-        String priceText = config.priceType() == PriceType.HA ? item.getAlchemyPriceLabelText() : item.getExchangePriceLabelText();
+        String priceText = config.priceType() == PriceType.HA ? item.getAlchemyPriceLabelTextFull() : item.getExchangePriceLabelTextFull();
 
         setToolTipText("<html>" + item.getName() +
                 (config.showQuantity() ? "<br>" + item.getQuantityLabelText() : "") +
