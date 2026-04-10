@@ -13,6 +13,7 @@ import net.runelite.client.util.SwingUtil;
 import okhttp3.OkHttpClient;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -44,6 +45,8 @@ public class LootLookupPanel extends PluginPanel {
     JRadioButton listBtn = new JRadioButton();
     JRadioButton gridBtn = new JRadioButton();
     JToggleButton externalLinkBtn = new JToggleButton();
+    private final JButton filterBtn = new JButton();
+    private final JPanel filterBtnContainer = new JPanel();
     private final JPanel externalLinkBtnContainer = new JPanel();
     private final JPanel listBtnContainer = new JPanel();
     private final JPanel gridBtnContainer = new JPanel();
@@ -103,6 +106,8 @@ public class LootLookupPanel extends PluginPanel {
         listBtn.setIcon(LIST_ICON_FADED);
         listBtn.setRolloverIcon(LIST_ICON_HOVER);
         listBtn.setSelectedIcon(LIST_ICON);
+        listBtn.setMargin(new Insets(0, 0, 0, 0));
+        listBtn.setBorder(new EmptyBorder(0, 0, 0, 0));
         Util.showHandCursorOnHover(listBtn);
         listBtn.setToolTipText("List");
         listBtn.addActionListener(evt -> {
@@ -112,6 +117,7 @@ public class LootLookupPanel extends PluginPanel {
         listBtn.setSelected(viewOption == ViewOption.LIST);
         listBtnContainer.setLayout(new BorderLayout());
         listBtnContainer.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+        listBtnContainer.setBorder(new EmptyBorder(0, 0, 0, 0));
 
 
         // Grid Button
@@ -121,6 +127,8 @@ public class LootLookupPanel extends PluginPanel {
         gridBtn.setIcon(GRID_ICON_FADED);
         gridBtn.setRolloverIcon(GRID_ICON_HOVER);
         gridBtn.setSelectedIcon(GRID_ICON);
+        gridBtn.setMargin(new Insets(0, 0, 0, 0));
+        gridBtn.setBorder(new EmptyBorder(0, 0, 0, 0));
         Util.showHandCursorOnHover(gridBtn);
         gridBtn.setToolTipText("Grid");
         gridBtn.addActionListener(evt -> {
@@ -130,6 +138,7 @@ public class LootLookupPanel extends PluginPanel {
         gridBtn.setSelected(viewOption == ViewOption.GRID);
         gridBtnContainer.setLayout(new BorderLayout());
         gridBtnContainer.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+        gridBtnContainer.setBorder(new EmptyBorder(0, 0, 0, 0));
 
 
         viewOptionGroup.add(listBtn);
@@ -140,6 +149,23 @@ public class LootLookupPanel extends PluginPanel {
         buildButton(percentBtn, PERCENT_ICON_FADED, PERCENT_ICON, "Toggle Rarity Percentage", "Toggle Rarity Percentage", evt -> {
             percentBtn.setSelected(!percentBtn.isSelected());
         });
+
+        // Filter Button
+
+        SwingUtil.removeButtonDecorations(filterBtn);
+        filterBtn.setIcon(FILTER_ICON_FADED);
+        filterBtn.setRolloverIcon(FILTER_ICON_HOVER);
+        filterBtn.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+        filterBtn.setUI(new BasicButtonUI());
+        filterBtn.setToolTipText("Filter sections");
+        Util.showHandCursorOnHover(filterBtn);
+        filterBtn.addActionListener((evt) -> {
+            if (tablePanel != null) {
+                tablePanel.toggleFilterMenu(filterBtn, this::updateFilterButtonIcon);
+            }
+        });
+        filterBtnContainer.setLayout(new BorderLayout());
+        filterBtnContainer.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 
         // External Link Button
 
@@ -183,10 +209,14 @@ public class LootLookupPanel extends PluginPanel {
 
         listBtnContainer.add(listBtn, BorderLayout.CENTER);
         actionsRight.add(listBtnContainer);
+        actionsRight.add(Box.createRigidArea(new Dimension(6, 0)));
         gridBtnContainer.add(gridBtn, BorderLayout.CENTER);
         actionsRight.add(gridBtnContainer);
+        actionsRight.add(Box.createRigidArea(new Dimension(14, 0)));
+        filterBtnContainer.add(filterBtn, BorderLayout.CENTER);
+        actionsRight.add(filterBtnContainer);
+        updateFilterButtonIcon();
         if (config != null & config.showRarity()) actionsRight.add(percentBtn);
-        actionsRight.add(Box.createRigidArea(new Dimension(5, 0)));
         externalLinkBtnContainer.add(externalLinkBtn, BorderLayout.CENTER);
         actionsRight.add(externalLinkBtnContainer);
 
@@ -244,6 +274,17 @@ public class LootLookupPanel extends PluginPanel {
         SwingUtil.addModalTooltip(btn, on, off);
         Util.showHandCursorOnHover(btn);
         btn.addActionListener(listener);
+    }
+
+    /**
+     * Swap the filter toolbar icon between its active and inactive states
+     * based on whether the current table panel has any hidden sections.
+     * Called when the filter popover toggles an entry and when the table
+     * panel is rebuilt.
+     */
+    void updateFilterButtonIcon() {
+        boolean active = tablePanel != null && tablePanel.hasActiveFilter();
+        filterBtn.setIcon(active ? FILTER_ICON : FILTER_ICON_FADED);
     }
 
     int getSelectedIndexForCombatLevel(int combatLevel) {

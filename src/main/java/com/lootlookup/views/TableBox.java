@@ -10,6 +10,7 @@ import net.runelite.client.util.SwingUtil;
 import okhttp3.OkHttpClient;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -29,6 +30,7 @@ public class TableBox extends JPanel {
     private String fullHeaderStr;
     private String headerStr;
     private JButton percentBtn;
+    private final boolean isPinned;
 
     private final JButton collapseBtn = new JButton();
     private final JPanel listViewContainer = new JPanel();
@@ -40,10 +42,15 @@ public class TableBox extends JPanel {
     private final Color HOVER_COLOR = ColorScheme.DARKER_GRAY_HOVER_COLOR.darker();
 
     private final List<WikiItemPanel> itemPanels = new ArrayList<>();
-    // Collapse button (~15px) + spacing (5+10px) = ~30px
+    // Collapse button (~15px) + spacing (5+10px) + optional pin icon (~16px + 5) = ~30-50px
     private static final int HEADER_HORIZONTAL_PADDING = 30;
+    private static final int PIN_ICON_RESERVED_WIDTH = 20;
 
     public TableBox(LootLookupConfig config, OkHttpClient okHttpClient, WikiItem[] items, ViewOption viewOption, String headerStr, JButton percentButton) {
+        this(config, okHttpClient, items, viewOption, headerStr, percentButton, false);
+    }
+
+    public TableBox(LootLookupConfig config, OkHttpClient okHttpClient, WikiItem[] items, ViewOption viewOption, String headerStr, JButton percentButton, boolean isPinned) {
         this.config = config;
         this.okHttpClient = okHttpClient;
         this.items = items;
@@ -51,6 +58,7 @@ public class TableBox extends JPanel {
         this.headerStr = headerStr;
         this.viewOption = viewOption;
         this.percentBtn = percentButton;
+        this.isPinned = isPinned;
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -67,7 +75,8 @@ public class TableBox extends JPanel {
         // Label
 
         Font headerFont = FontManager.getRunescapeBoldFont();
-        int availableWidth = PluginPanel.PANEL_WIDTH - HEADER_HORIZONTAL_PADDING;
+        int availableWidth = PluginPanel.PANEL_WIDTH - HEADER_HORIZONTAL_PADDING
+                - (isPinned ? PIN_ICON_RESERVED_WIDTH : 0);
         headerStr = Util.truncateToFit(headerFont, headerStr, availableWidth);
 
         JLabel headerLabel = new JLabel(headerStr);
@@ -95,6 +104,15 @@ public class TableBox extends JPanel {
         SwingUtil.addModalTooltip(collapseBtn, "Expand Table", "Collapse Table");
         collapseBtn.setBackground(HEADER_BG_COLOR);
         collapseBtn.setUI(new BasicButtonUI()); // substance breaks the layout
+        // Fix a fixed 16x16 bounding box so the expanded (12x8) and collapsed
+        // (8x12) chevrons don't end up with different button heights and
+        // clip at the bottom of the header row.
+        Dimension iconBox = new Dimension(16, 16);
+        collapseBtn.setPreferredSize(iconBox);
+        collapseBtn.setMinimumSize(iconBox);
+        collapseBtn.setMaximumSize(iconBox);
+        collapseBtn.setHorizontalAlignment(SwingConstants.CENTER);
+        collapseBtn.setVerticalAlignment(SwingConstants.CENTER);
         collapseBtn.addActionListener(evt -> toggleCollapse());
         Util.showHandCursorOnHover(collapseBtn);
     }
@@ -131,6 +149,14 @@ public class TableBox extends JPanel {
         }
 
         headerContainer.add(leftHeader, BorderLayout.WEST);
+        if (isPinned) {
+            JLabel pinLabel = new JLabel("\uD83D\uDCCC");
+            pinLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+            pinLabel.setForeground(ColorScheme.BRAND_ORANGE);
+            pinLabel.setBorder(new EmptyBorder(0, 0, 0, 10));
+            pinLabel.setToolTipText("Pinned to the top by config");
+            headerContainer.add(pinLabel, BorderLayout.EAST);
+        }
         add(headerContainer);
 
     }

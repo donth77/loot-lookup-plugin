@@ -14,6 +14,7 @@ public class Icons {
     final static BufferedImage externalLinkImgResize = Util.resizeImg(externalLinkImg, 20, 20);
     final static BufferedImage listImg = ImageUtil.loadImageResource(Icons.class, "/list.png");
     final static BufferedImage gridImg = ImageUtil.loadImageResource(Icons.class, "/grid.png");
+    final static BufferedImage filterImg = ImageUtil.loadImageResource(Icons.class, "/filter.png");
 
     public static final BufferedImage noteImg = ImageUtil.loadImageResource(Icons.class, "/Bank_note.png");
 
@@ -32,5 +33,9 @@ public class Icons {
     public static final ImageIcon GRID_ICON = new ImageIcon(gridImg);
     public static final ImageIcon GRID_ICON_HOVER = new ImageIcon(ImageUtil.alphaOffset(gridImg, -180));
     public static final ImageIcon GRID_ICON_FADED = new ImageIcon(ImageUtil.alphaOffset(gridImg, -220));
+
+    public static final ImageIcon FILTER_ICON = new ImageIcon(filterImg);
+    public static final ImageIcon FILTER_ICON_HOVER = new ImageIcon(ImageUtil.alphaOffset(filterImg, -180));
+    public static final ImageIcon FILTER_ICON_FADED = new ImageIcon(ImageUtil.alphaOffset(filterImg, -220));
 
 }

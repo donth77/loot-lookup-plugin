@@ -295,7 +295,7 @@ public class WikiItemPanel extends JPanel {
             String shortText = config.priceType() == PriceType.HA
                     ? item.getAlchemyPriceLabelTextShort() : item.getExchangePriceLabelTextShort();
             String preciseText = config.priceType() == PriceType.HA
-                    ? item.getAlchemyPriceLabelText() : item.getExchangePriceLabelText();
+                    ? item.getAlchemyPriceLabelTextFull() : item.getExchangePriceLabelTextFull();
 
             String text = Util.fitText(font, new String[]{scaledText, shortText}, availableWidth);
             priceLabel.setText(text);

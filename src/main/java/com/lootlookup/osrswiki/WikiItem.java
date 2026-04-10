@@ -113,10 +113,6 @@ public class WikiItem {
 	}
 
 	public String getExchangePriceLabelTextScaled() {
-		if (exchangePriceStr != null
-				&& (exchangePriceStr.contains("-") || exchangePriceStr.contains(";"))) {
-			return getExchangePriceLabelText();
-		}
 		if (exchangePrice <= 0 || name.equals("Nothing")) {
 			return getExchangePriceLabelText();
 		}
@@ -124,11 +120,7 @@ public class WikiItem {
 	}
 
 	public String getExchangePriceLabelTextShort() {
-		String priceLabelStr = exchangePrice > 0 ? Util.rsFormat(exchangePrice) : "";
-		if (name.equals("Nothing")) {
-			priceLabelStr = "";
-		}
-		return priceLabelStr;
+		return getExchangePriceLabelTextScaled();
 	}
 
 	public String getAlchemyPriceLabelText() {
@@ -148,10 +140,6 @@ public class WikiItem {
 	}
 
 	public String getAlchemyPriceLabelTextScaled() {
-		if (alchemyPriceStr != null
-				&& (alchemyPriceStr.contains("-") || alchemyPriceStr.contains(";"))) {
-			return getAlchemyPriceLabelText();
-		}
 		if (alchemyPrice < 0 || name.equals("Nothing")) {
 			return getAlchemyPriceLabelText();
 		}
@@ -159,10 +147,6 @@ public class WikiItem {
 	}
 
 	public String getAlchemyPriceLabelTextShort() {
-		String priceLabelStr = alchemyPrice > 0 ? Util.rsFormat(alchemyPrice) : "";
-        if (name.equals("Nothing") || alchemyPrice < 0) {
-			priceLabelStr = "";
-		}
-		return priceLabelStr;
+		return getAlchemyPriceLabelTextScaled();
 	}
 }

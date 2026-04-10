@@ -86,6 +86,16 @@ public interface LootLookupConfig extends Config {
 
     @ConfigItem(
             position = 7,
+            keyName = "pinnedSubTables",
+            name = "Pinned sections",
+            description = "Comma-separated keywords to pin matching sections to the top of the drops panel (e.g. \"Tertiary\" pins Tertiary, Catacombs tertiary, etc.). Matched case-insensitively as substrings. Clear to keep sections in wiki order."
+    )
+    default String pinnedSubTables() {
+        return "Unique, Tertiary";
+    }
+
+    @ConfigItem(
+            position = 8,
             keyName = "disableItemLinks",
             name = "Disable Item links (List only)",
             description = "Disable links to OSRS Wiki page for item"
@@ -95,7 +105,7 @@ public interface LootLookupConfig extends Config {
     }
 
     @ConfigItem(
-            position = 8,
+            position = 9,
             keyName = "gridRowOption",
             name = "Items per row (Grid only)",
             description = "Number of items displayed in a grid row"
@@ -105,7 +115,7 @@ public interface LootLookupConfig extends Config {
     }
 
     @ConfigItem(
-            position = 9,
+            position = 10,
             keyName = "commonColor",
             name = "Common Color",
             description = "Color to highlight the rarity of items with a value greater than 1/100"
@@ -115,7 +125,7 @@ public interface LootLookupConfig extends Config {
     }
 
     @ConfigItem(
-            position = 10,
+            position = 11,
             keyName = "rareColor",
             name = "Rare Color",
             description = "Color to highlight the rarity of items with a value of 1/100 - 1/1000"
@@ -125,7 +135,7 @@ public interface LootLookupConfig extends Config {
     }
 
     @ConfigItem(
-            position = 11,
+            position = 12,
             keyName = "superRareColor",
             name = "Super Rare Color",
             description = "Color to highlight the rarity of items with a value of 1/1000 or less"
@@ -135,7 +145,7 @@ public interface LootLookupConfig extends Config {
     }
 
     @ConfigItem(
-            position = 12,
+            position = 13,
             keyName = "priceColor",
             name = "Price Color",
             description = "Color to highlight item prices"

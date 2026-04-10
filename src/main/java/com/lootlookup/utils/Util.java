@@ -154,18 +154,19 @@ public class Util {
     /**
      * Scales a GP value into a consistent value-based label for the list view:
      * values under 10,000 show with full comma-separated precision and a
-     * " gp" suffix, 10k-999k show as "N.N K", 1M-999M as "N.N M", and 1B and
-     * above as "N.N B". Trailing ".0" is suppressed so round values render as
-     * "10 K" and "1 M" rather than "10.0 K" / "1.0 M". Values that round up
-     * to the next tier at the boundary (e.g. 999,950 would otherwise format
-     * as "1000 K") get promoted to the next tier so they render as "1 M".
+     * "gp" suffix, 10k-999k show as "NK", 1M-999M as "NM", and 1B and above
+     * as "NB", matching the in-game stack shorthand. Trailing ".0" is
+     * suppressed so round values render as "10K" and "1M" rather than
+     * "10.0K" / "1.0M". Values that round up to the next tier at the
+     * boundary (e.g. 999,950 would otherwise format as "1000K") get promoted
+     * to the next tier so they render as "1M".
      */
     public static String rsScaledPrice(long value) {
         if (value < 0) {
             return "-" + rsScaledPrice(-value);
         }
         if (value < 10_000) {
-            return NumberFormat.getNumberInstance().format(value) + " gp";
+            return NumberFormat.getNumberInstance().format(value) + "gp";
         }
         long[] divisors = {1_000L, 1_000_000L, 1_000_000_000L};
         String[] suffixes = {"K", "M", "B"};
@@ -185,7 +186,7 @@ public class Util {
         }
         double scaled = roundedTenths / 10.0;
         DecimalFormat df = new DecimalFormat("#.#");
-        return df.format(scaled) + " " + suffixes[tier];
+        return df.format(scaled) + suffixes[tier];
     }
 
     public static String toPercentage(double n, int digits) {

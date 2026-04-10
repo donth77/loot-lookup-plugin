@@ -84,15 +84,16 @@ public class WikiScraper {
                         || tableHeaderTextLower.contains("levels")
                         || tableHeaderTextLower.contains("reward")
                         || tableHeaderTextLower.contains("pickpocket")
+                        || tableHeaderTextLower.contains("hunter info")
                         || isDropsHeaderForEdgeCases(monsterName, tableHeaderText);
                 Boolean isPickpocketLootHeader = tableHeaderTextLower.contains("loot");
                 // An h3 whose heading is a variant "X drops" label (e.g.
                 // "Wilderness Slayer Cave drops" on Jelly) is promoted to a
-                // new primary section so its h4 children get a fresh map and
-                // don't collide with an earlier variant's sub-table keys.
-                // Only promote once the current section already has entries,
-                // so a leading h3 like Chaos Elemental's "Minor drops" stays
-                // as a sub-table of the parent h2.
+                // new primary drop table so its h4 children get a fresh map
+                // and don't collide with an earlier variant's section keys.
+                // Only promote once the current drop table already has
+                // entries, so a leading h3 like Chaos Elemental's "Minor
+                // drops" stays as a section of the parent h2.
                 Boolean isSubDropsSection = tableHeaderTextLower.endsWith(" drops")
                         || tableHeaderTextLower.equals("drops");
                 Boolean parseH3Primary = isPickpocketLootHeader
@@ -411,6 +412,15 @@ public class WikiScraper {
             id = -1;
             sanitizedName = "Grotesque_Guardians";
         }
+        // When sanitizeName has rewritten the monster name to a different target page,
+        // zero the NPC id so Special:Lookup resolves by the rewritten name rather than
+        // the original NPC, matching the Dusk/Dawn pattern above.
+        String monsterNameLC = monsterName.toLowerCase();
+        if (monsterNameLC.equals("blood moon") || monsterNameLC.equals("blue moon")
+                || monsterNameLC.equals("eclipse moon")
+                || monsterNameLC.equals("eldric the ice king") || monsterNameLC.equals("branda the fire queen")) {
+            id = -1;
+        }
         // ---
         return baseWikiLookupUrl + "?type=npc&id=" + String.valueOf(id) + "&name=" + sanitizedName;
     }
@@ -434,6 +444,19 @@ public class WikiScraper {
         }
         if (name.equalsIgnoreCase("dusk") || name.equalsIgnoreCase("dawn")) {
             name = "grotesque guardians";
+        }
+        // Moons of Peril: individual boss pages have no drop tables; loot lives on Lunar Chest
+        if (name.equalsIgnoreCase("blood moon") || name.equalsIgnoreCase("blue moon")
+                || name.equalsIgnoreCase("eclipse moon")) {
+            name = "lunar chest";
+        }
+        // Royal Titans: Eldric and Branda standalone pages have no item-drops tables
+        if (name.equalsIgnoreCase("eldric the ice king") || name.equalsIgnoreCase("branda the fire queen")) {
+            name = "royal titans";
+        }
+        // DT2: Awakened variants don't have separate wiki pages; they share the base boss page
+        if (name.toLowerCase().matches("^awakened\\s+(vardorvis|duke sucellus|(the\\s+)?leviathan|(the\\s+)?whisperer)$")) {
+            name = name.replaceAll("(?i)^awakened\\s+", "");
         }
         // ---
         name = name.trim().toLowerCase().replaceAll("\\s+", "_");
