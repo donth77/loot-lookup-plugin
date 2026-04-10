@@ -290,16 +290,18 @@ public class WikiItemPanel extends JPanel {
             int nameWidth = Util.getStringWidth(FontManager.getRunescapeBoldFont(), itemName);
             int availableWidth = getAvailableTextWidth() - nameWidth - NAME_RIGHT_GAP;
 
-            String fullText = config.priceType() == PriceType.HA
-                    ? item.getAlchemyPriceLabelText() : item.getExchangePriceLabelText();
+            String scaledText = config.priceType() == PriceType.HA
+                    ? item.getAlchemyPriceLabelTextScaled() : item.getExchangePriceLabelTextScaled();
             String shortText = config.priceType() == PriceType.HA
                     ? item.getAlchemyPriceLabelTextShort() : item.getExchangePriceLabelTextShort();
+            String preciseText = config.priceType() == PriceType.HA
+                    ? item.getAlchemyPriceLabelText() : item.getExchangePriceLabelText();
 
-            String text = Util.fitText(font, new String[]{fullText, shortText}, availableWidth);
+            String text = Util.fitText(font, new String[]{scaledText, shortText}, availableWidth);
             priceLabel.setText(text);
 
-            if (!text.equals(fullText)) {
-                priceLabel.setToolTipText(fullText);
+            if (!text.equals(preciseText)) {
+                priceLabel.setToolTipText(preciseText);
             }
         }
     }

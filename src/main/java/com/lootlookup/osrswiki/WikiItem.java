@@ -112,6 +112,17 @@ public class WikiItem {
 		return getExchangePriceLabelText();
 	}
 
+	public String getExchangePriceLabelTextScaled() {
+		if (exchangePriceStr != null
+				&& (exchangePriceStr.contains("-") || exchangePriceStr.contains(";"))) {
+			return getExchangePriceLabelText();
+		}
+		if (exchangePrice <= 0 || name.equals("Nothing")) {
+			return getExchangePriceLabelText();
+		}
+		return Util.rsScaledPrice(exchangePrice);
+	}
+
 	public String getExchangePriceLabelTextShort() {
 		String priceLabelStr = exchangePrice > 0 ? Util.rsFormat(exchangePrice) : "";
 		if (name.equals("Nothing")) {
@@ -134,6 +145,17 @@ public class WikiItem {
 			return alchemyPriceStr + "gp";
 		}
 		return getAlchemyPriceLabelText();
+	}
+
+	public String getAlchemyPriceLabelTextScaled() {
+		if (alchemyPriceStr != null
+				&& (alchemyPriceStr.contains("-") || alchemyPriceStr.contains(";"))) {
+			return getAlchemyPriceLabelText();
+		}
+		if (alchemyPrice < 0 || name.equals("Nothing")) {
+			return getAlchemyPriceLabelText();
+		}
+		return Util.rsScaledPrice(alchemyPrice);
 	}
 
 	public String getAlchemyPriceLabelTextShort() {

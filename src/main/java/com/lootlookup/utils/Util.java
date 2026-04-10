@@ -151,6 +151,43 @@ public class Util {
         return formattedNumber.length() > 4 ? formattedNumber.replaceAll("\\.[0-9]+", "") : formattedNumber;
     }
 
+    /**
+     * Scales a GP value into a consistent value-based label for the list view:
+     * values under 10,000 show with full comma-separated precision and a
+     * " gp" suffix, 10k-999k show as "N.N K", 1M-999M as "N.N M", and 1B and
+     * above as "N.N B". Trailing ".0" is suppressed so round values render as
+     * "10 K" and "1 M" rather than "10.0 K" / "1.0 M". Values that round up
+     * to the next tier at the boundary (e.g. 999,950 would otherwise format
+     * as "1000 K") get promoted to the next tier so they render as "1 M".
+     */
+    public static String rsScaledPrice(long value) {
+        if (value < 0) {
+            return "-" + rsScaledPrice(-value);
+        }
+        if (value < 10_000) {
+            return NumberFormat.getNumberInstance().format(value) + " gp";
+        }
+        long[] divisors = {1_000L, 1_000_000L, 1_000_000_000L};
+        String[] suffixes = {"K", "M", "B"};
+        int tier;
+        if (value >= divisors[2]) {
+            tier = 2;
+        } else if (value >= divisors[1]) {
+            tier = 1;
+        } else {
+            tier = 0;
+        }
+        long roundedTenths = Math.round(value * 10.0 / divisors[tier]);
+        // If rounding carries to 1000.0 at this tier, promote to the next
+        if (roundedTenths >= 10_000 && tier < divisors.length - 1) {
+            tier++;
+            roundedTenths = Math.round(value * 10.0 / divisors[tier]);
+        }
+        double scaled = roundedTenths / 10.0;
+        DecimalFormat df = new DecimalFormat("#.#");
+        return df.format(scaled) + " " + suffixes[tier];
+    }
+
     public static String toPercentage(double n, int digits) {
         return String.format("%." + digits + "f", n * 100) + "%";
     }
