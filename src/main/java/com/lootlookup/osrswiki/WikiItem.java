@@ -64,7 +64,7 @@ public class WikiItem {
     }
 
     public String getQuantityLabelText() {
-        if (quantityStr.contains("-") || isNoted()) {
+        if (quantityStr.contains("-") || quantityStr.contains(";") || isNoted()) {
             return "x" + quantityStr;
         }
         return quantity > 0 ? "x" + nf.format(quantity) : quantityStr;
@@ -73,6 +73,9 @@ public class WikiItem {
     public String getQuantityLabelTextShort() {
         if (isNoted()) {
             return "x" + quantityStr.replaceAll("\\(.*\\)", "(n)").trim();
+        }
+        if (quantityStr.contains(";")) {
+            return "x" + quantityStr;
         }
         return getQuantityValueText();
     }

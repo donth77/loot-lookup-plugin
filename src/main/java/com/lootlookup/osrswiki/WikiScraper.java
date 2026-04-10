@@ -303,9 +303,9 @@ public class WikiScraper {
             NumberFormat nf = NumberFormat.getNumberInstance();
 
             quantityStr = row[2];
-            quantityStr = quantityStr.replaceAll("–", "-").trim();
+            quantityStr = quantityStr.replaceAll("–", "-").replace('\u00A0', ' ').trim();
             try {
-                String[] quantityStrs = quantityStr.replaceAll("\\s+", "").split("-");
+                String[] quantityStrs = quantityStr.replaceAll("\\s+", "").split("[-;]");
                 String firstQuantityStr = quantityStrs.length > 0 ? quantityStrs[0] : null;
                 quantity = nf.parse(firstQuantityStr).intValue();
             } catch (ParseException e) {
