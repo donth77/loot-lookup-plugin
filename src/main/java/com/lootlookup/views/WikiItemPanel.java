@@ -8,6 +8,7 @@ import com.lootlookup.osrswiki.WikiScraper;
 import com.lootlookup.utils.Util;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
+import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
 import okhttp3.OkHttpClient;
 
@@ -39,10 +40,41 @@ public class WikiItemPanel extends JPanel {
     private final JPanel imageContainer = new JPanel(new BorderLayout());
     private final JPanel leftSidePanel = new JPanel(new GridLayout(2, 1));
 
-    private static int maxNameLength = 22;
-    private static int labelsMaxLength = 25;
+    // Fixed layout costs: paddingContainer (4px) + imageContainer (~40px) + leftSidePanel padding (4px) + quantityLabel padding (2px)
+    private static final int FIXED_HORIZONTAL_PADDING = 50;
+    // Minimum gap between the name and the right-side labels so they never visually touch
+    private static final int NAME_RIGHT_GAP = 5;
 
-    public WikiItemPanel(WikiItem item, LootLookupConfig config, boolean showSeparator, OkHttpClient okHttpClient, JButton percentButton) {
+    private int getAvailableTextWidth() {
+        return PluginPanel.PANEL_WIDTH - FIXED_HORIZONTAL_PADDING;
+    }
+
+    /**
+     * Calculates the minimum pixel width that must be reserved for the right-side
+     * quantity/price labels, using their shortest text variants. The right panel
+     * uses a GridLayout(2,1), so its width is max(quantity, price).
+     */
+    private int getMinRightPanelWidth() {
+        Font font = FontManager.getRunescapeSmallFont();
+        int width = 0;
+
+        if (config != null && config.showQuantity()) {
+            int qShort = Util.getStringWidth(font, item.getQuantityLabelTextShort());
+            int qMin = Util.getStringWidth(font, item.getQuantityValueText());
+            width = Math.max(width, Math.min(qShort, qMin));
+        }
+
+        if (config != null && config.showPrice()) {
+            String shortPrice = config.priceType() == PriceType.HA
+                    ? item.getAlchemyPriceLabelTextShort() : item.getExchangePriceLabelTextShort();
+            width = Math.max(width, Util.getStringWidth(font, shortPrice));
+        }
+
+        return width;
+    }
+
+    public WikiItemPanel(WikiItem item, LootLookupConfig config, boolean showSeparator, OkHttpClient okHttpClient,
+            JButton percentButton) {
         this.item = item;
         this.config = config;
 
@@ -52,13 +84,17 @@ public class WikiItemPanel extends JPanel {
 
         this.percentBtn = percentButton;
 
-        if (itemName.length() > maxNameLength) {
-            itemName = itemName.replaceAll("\\(.*\\)", "").trim(); // Don't display any text in parentheses if name is too long
+        Font nameFont = FontManager.getRunescapeBoldFont();
+        // Reserve room for the right-side labels so they don't overlap the name
+        int reservedRight = getMinRightPanelWidth();
+        int availableNameWidth = getAvailableTextWidth()
+                - (reservedRight > 0 ? reservedRight + NAME_RIGHT_GAP : 0);
 
-            if (itemName.length() > maxNameLength) {
-                itemName = itemName.substring(0, maxNameLength) + "…"; // Manually truncate the item name
-            }
+        if (Util.getStringWidth(nameFont, itemName) > availableNameWidth) {
+            // Only remove known-redundant suffixes (poison variants shown on icon)
+            itemName = itemName.replaceAll("\\s*\\(p\\+?\\+?\\)", "").trim();
         }
+        itemName = Util.truncateToFit(nameFont, itemName, availableNameWidth);
 
         percentButton.addItemListener((evt) -> {
             setRarityLabelText();
@@ -70,7 +106,6 @@ public class WikiItemPanel extends JPanel {
         setBackground(bgColor);
 
         JPanel container = new JPanel(new BorderLayout());
-
 
         JPanel paddingContainer = new JPanel(new BorderLayout());
         int padding = 2;
@@ -145,7 +180,7 @@ public class WikiItemPanel extends JPanel {
     private void downloadImage(JLabel imageLabel) {
         try {
             Util.downloadImage(this.okHttpClient, this.imageUrl, (image) -> {
-                BufferedImage img = item.getQuantityStr().endsWith(" (noted)") ? Util.getNotedImg(image) : image;
+                BufferedImage img = item.isNoted() ? Util.getNotedImg(image) : image;
                 imageLabel.setIcon(new ImageIcon(img));
                 imageContainer.setBorder(new EmptyBorder(0, 5, 0, Math.max(30 - image.getWidth(), 5)));
             });
@@ -157,7 +192,9 @@ public class WikiItemPanel extends JPanel {
     private JPanel buildImagePanel() {
         imageContainer.setSize(30, imageContainer.getHeight());
         JLabel imageLabel = new JLabel();
-        imageLabel.setIcon(new ImageIcon(IconTextField.class.getResource(IconTextField.Icon.LOADING_DARKER.getFile()))); // set loading icon
+        imageLabel.setIcon(new ImageIcon(IconTextField.class.getResource(IconTextField.Icon.LOADING_DARKER.getFile()))); // set
+                                                                                                                         // loading
+                                                                                                                         // icon
 
         new Thread(() -> downloadImage(imageLabel)).start();
 
@@ -168,7 +205,6 @@ public class WikiItemPanel extends JPanel {
         imageContainer.setBackground(bgColor);
         return imageContainer;
     }
-
 
     private JPanel buildLeftPanel() {
         JPanel container = new JPanel();
@@ -197,7 +233,6 @@ public class WikiItemPanel extends JPanel {
         return container;
     }
 
-
     private JPanel buildRightPanel() {
         JPanel rightSidePanel = new JPanel(new GridLayout(2, 1));
 
@@ -207,11 +242,9 @@ public class WikiItemPanel extends JPanel {
         quantityLabel.setHorizontalAlignment(JLabel.RIGHT);
         quantityLabel.setVerticalAlignment(JLabel.CENTER);
 
-
         setPriceLabelText();
         priceLabel.setVerticalAlignment(JLabel.CENTER);
         priceLabel.setHorizontalAlignment(JLabel.RIGHT);
-
 
         rightSidePanel.add(quantityLabel);
         rightSidePanel.add(priceLabel);
@@ -222,11 +255,24 @@ public class WikiItemPanel extends JPanel {
     void setQuantityLabelText() {
         if (config != null && !config.showQuantity()) {
             quantityLabel.setText("");
-        } else {
-            quantityLabel.setText((itemName + item.getQuantityLabelText()).length() > labelsMaxLength ? item.getQuantityLabelTextShort() : item.getQuantityLabelText());
+            return;
+        }
+
+        Font font = FontManager.getRunescapeSmallFont();
+        int nameWidth = Util.getStringWidth(FontManager.getRunescapeBoldFont(), itemName);
+        int availableWidth = getAvailableTextWidth() - nameWidth - NAME_RIGHT_GAP;
+
+        String fullText = item.getQuantityLabelText();
+        String shortText = item.getQuantityLabelTextShort();
+        String minText = item.getQuantityValueText();
+
+        String text = Util.fitText(font, new String[]{fullText, shortText, minText}, availableWidth);
+        quantityLabel.setText(text);
+
+        if (!text.equals(fullText)) {
+            quantityLabel.setToolTipText(fullText);
         }
     }
-
 
     void setRarityLabelText() {
         rarityLabel.setText(item.getRarityLabelText(percentBtn.isSelected()));
@@ -240,10 +286,21 @@ public class WikiItemPanel extends JPanel {
     void setPriceLabelText() {
         priceLabel.setText("");
         if (config != null && config.showPrice()) {
-            String priceText = config.priceType() == PriceType.HA ? item.getAlchemyPriceLabelText() : item.getExchangePriceLabelText();
-            String priceTextShort = config.priceType() == PriceType.HA ? item.getAlchemyPriceLabelTextShort() : item.getExchangePriceLabelTextShort();
-            int price = config.priceType() == PriceType.HA ? item.getAlchemyPrice() : item.getExchangePrice();
-            priceLabel.setText((itemName + priceText).length() > labelsMaxLength && price >= 1000 ? priceTextShort : priceText);
+            Font font = FontManager.getRunescapeSmallFont();
+            int nameWidth = Util.getStringWidth(FontManager.getRunescapeBoldFont(), itemName);
+            int availableWidth = getAvailableTextWidth() - nameWidth - NAME_RIGHT_GAP;
+
+            String fullText = config.priceType() == PriceType.HA
+                    ? item.getAlchemyPriceLabelText() : item.getExchangePriceLabelText();
+            String shortText = config.priceType() == PriceType.HA
+                    ? item.getAlchemyPriceLabelTextShort() : item.getExchangePriceLabelTextShort();
+
+            String text = Util.fitText(font, new String[]{fullText, shortText}, availableWidth);
+            priceLabel.setText(text);
+
+            if (!text.equals(fullText)) {
+                priceLabel.setToolTipText(fullText);
+            }
         }
     }
 }

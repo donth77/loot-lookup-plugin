@@ -59,15 +59,19 @@ public class WikiItem {
         return imageUrl;
     }
 
+    public boolean isNoted() {
+        return quantityStr.endsWith(" (noted)");
+    }
+
     public String getQuantityLabelText() {
-        if (quantityStr.contains("-") || quantityStr.endsWith(" (noted)")) {
+        if (quantityStr.contains("-") || isNoted()) {
             return "x" + quantityStr;
         }
         return quantity > 0 ? "x" + nf.format(quantity) : quantityStr;
     }
 
     public String getQuantityLabelTextShort() {
-        if (quantityStr.endsWith(" (noted)")) {
+        if (isNoted()) {
             return "x" + quantityStr.replaceAll("\\(.*\\)", "(n)").trim();
         }
         return getQuantityValueText();
@@ -110,7 +114,7 @@ public class WikiItem {
 	}
 
 	public String getAlchemyPriceLabelTextShort() {
-		String priceLabelStr = alchemyPrice > 0 ? nf.format(alchemyPrice) + "gp" : "";
+		String priceLabelStr = alchemyPrice > 0 ? Util.rsFormat(alchemyPrice) : "";
         if (name.equals("Nothing") || alchemyPrice < 0) {
 			priceLabelStr = "";
 		}

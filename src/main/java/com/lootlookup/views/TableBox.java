@@ -5,6 +5,7 @@ import com.lootlookup.osrswiki.WikiItem;
 import com.lootlookup.utils.Util;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
+import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.util.SwingUtil;
 import okhttp3.OkHttpClient;
 
@@ -39,7 +40,8 @@ public class TableBox extends JPanel {
     private final Color HOVER_COLOR = ColorScheme.DARKER_GRAY_HOVER_COLOR.darker();
 
     private final List<WikiItemPanel> itemPanels = new ArrayList<>();
-    private static int maxHeaderLength = 28;
+    // Collapse button (~15px) + spacing (5+10px) = ~30px
+    private static final int HEADER_HORIZONTAL_PADDING = 30;
 
     public TableBox(LootLookupConfig config, OkHttpClient okHttpClient, WikiItem[] items, ViewOption viewOption, String headerStr, JButton percentButton) {
         this.config = config;
@@ -64,9 +66,9 @@ public class TableBox extends JPanel {
     void buildLeftHeader() {
         // Label
 
-        if (headerStr.length() > maxHeaderLength) {
-            headerStr = headerStr.substring(0, maxHeaderLength) + "…"; // Manually truncate the header
-        }
+        Font headerFont = FontManager.getRunescapeBoldFont();
+        int availableWidth = PluginPanel.PANEL_WIDTH - HEADER_HORIZONTAL_PADDING;
+        headerStr = Util.truncateToFit(headerFont, headerStr, availableWidth);
 
         JLabel headerLabel = new JLabel(headerStr);
         headerLabel.setFont(FontManager.getRunescapeBoldFont());

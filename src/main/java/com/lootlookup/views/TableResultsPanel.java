@@ -6,6 +6,7 @@ import com.lootlookup.osrswiki.WikiItem;
 import com.lootlookup.utils.Util;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
+import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.materialtabs.MaterialTab;
 import net.runelite.client.ui.components.materialtabs.MaterialTabGroup;
 import net.runelite.client.util.SwingUtil;
@@ -33,7 +34,6 @@ public class TableResultsPanel extends JPanel {
     private int selectedTabIndex;
 
     private final JPanel dropTableContent = new JPanel();
-    private final int maxHeaderLength = 31;
 
     public TableResultsPanel(LootLookupConfig config, OkHttpClient okHttpClient, DropTableSection[] dropTableSections, ViewOption viewOption, JButton collapseButton, JButton percentButton, int selectedTabIndex) {
         this.config = config;
@@ -121,15 +121,13 @@ public class TableResultsPanel extends JPanel {
 
             JPanel labelContainer = new JPanel(new BorderLayout());
 
-            String dropsHeaderText = selectedSection.getHeader();
-            if (dropsHeaderText.length() > maxHeaderLength) {
-                dropsHeaderText = dropsHeaderText.substring(0, maxHeaderLength) + "…";
-            }
+            Font headerFont = FontManager.getRunescapeBoldFont();
+            String dropsHeaderText = Util.truncateToFit(headerFont, selectedSection.getHeader(), PluginPanel.PANEL_WIDTH);
 
             JLabel sectionHeaderLabel = new JLabel(dropsHeaderText);
-            sectionHeaderLabel.setFont(FontManager.getRunescapeBoldFont());
+            sectionHeaderLabel.setFont(headerFont);
             sectionHeaderLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
-            if (dropsHeaderText.endsWith("…")) {
+            if (!dropsHeaderText.equals(selectedSection.getHeader())) {
                 sectionHeaderLabel.setToolTipText(selectedSection.getHeader());
             }
 

@@ -5,6 +5,7 @@ import com.lootlookup.osrswiki.WikiItem;
 import com.lootlookup.utils.Util;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
+import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
 import okhttp3.OkHttpClient;
 
@@ -26,8 +27,6 @@ public class GridItem extends JPanel {
     private final JLabel imageLabel = new JLabel();
 
     private final Color bgColor = ColorScheme.DARKER_GRAY_COLOR;
-
-    private static int maxQuantityLength = 6;
 
     public GridItem(WikiItem item, LootLookupConfig config, JButton percentButton, OkHttpClient okHttpClient) {
         this.item = item;
@@ -56,7 +55,7 @@ public class GridItem extends JPanel {
 
         // Updated to use OkHttpClient
         Util.downloadImage(okHttpClient, item.getImageUrl(), (image) -> {
-            BufferedImage img = item.getQuantityStr().endsWith(" (noted)") ? Util.getNotedImg(image) : image;
+            BufferedImage img = item.isNoted() ? Util.getNotedImg(image) : image;
             imageLabel.setIcon(new ImageIcon(img));
         });
 
@@ -64,8 +63,12 @@ public class GridItem extends JPanel {
         bottomText.setBackground(new Color(0, 0, 0, 0));
 
         bottomText.setLayout(new BorderLayout());
-        String quantityLabelTextShort = item.getQuantityLabelTextShort();
-        JLabel quantityLabel = new JLabel(quantityLabelTextShort.length() > maxQuantityLength ? item.getQuantityValueText() : quantityLabelTextShort);
+        Font quantityFont = FontManager.getRunescapeSmallFont();
+        int cellWidth = PluginPanel.PANEL_WIDTH / config.gridRowOption().getValue();
+        String quantityText = Util.fitText(quantityFont,
+                new String[]{item.getQuantityLabelTextShort(), item.getQuantityValueText()},
+                cellWidth - 4);
+        JLabel quantityLabel = new JLabel(quantityText);
 
         quantityLabel.setBackground(bgColor);
         quantityLabel.setFont(FontManager.getRunescapeSmallFont());

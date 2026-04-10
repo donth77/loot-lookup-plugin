@@ -109,6 +109,35 @@ public class Util {
         return "#" + Integer.toHexString(color.getRGB()).substring(2);
     }
 
+    public static int getStringWidth(Font font, String text) {
+        FontMetrics fm = new JLabel().getFontMetrics(font);
+        return fm.stringWidth(text);
+    }
+
+    public static String fitText(Font font, String[] candidates, int availableWidth) {
+        FontMetrics fm = new JLabel().getFontMetrics(font);
+        for (String text : candidates) {
+            if (fm.stringWidth(text) <= availableWidth) {
+                return text;
+            }
+        }
+        return candidates[candidates.length - 1];
+    }
+
+    public static String truncateToFit(Font font, String text, int availableWidth) {
+        FontMetrics fm = new JLabel().getFontMetrics(font);
+        if (fm.stringWidth(text) <= availableWidth) return text;
+
+        String ellipsis = "\u2026";
+        int ellipsisWidth = fm.stringWidth(ellipsis);
+        for (int i = text.length() - 1; i > 0; i--) {
+            if (fm.stringWidth(text.substring(0, i)) + ellipsisWidth <= availableWidth) {
+                return text.substring(0, i) + ellipsis;
+            }
+        }
+        return ellipsis;
+    }
+
     public static String rsFormat(double number) {
         int power;
         String suffix = " KMBT";
