@@ -4,7 +4,7 @@ RuneLite plugin to quickly reference the monster drop tables from OSRS Wiki
 
 ## Features
 
-- "Lookup Drops" menu option
+- "Lookup Drops" menu option (attackable and pickpocketable NPCs)
 - Search bar for monster names
 - Collapsible sections for each drop table
 - Collapse all / Expand all button
@@ -15,6 +15,10 @@ RuneLite plugin to quickly reference the monster drop tables from OSRS Wiki
 - Choose between 4 or 5 rows in Grid view
 - Customize colors for rarity and prices
 - Multiple tabs for monsters with separate drop tables
+- Disable the right-click menu option
+- Pin selected sections (e.g. Uniques, Tertiary) to the top of every drops panel
+- Filter popover in the toolbar to show/hide individual sections per lookup
+- Exclude specific NPCs from the right-click menu option
 
 
 Config
@@ -33,6 +37,10 @@ Config
   - Select price type for item: Grand Exchange or High Alch
 #### Disable Right Click Menu Option
   - Hides the in-game right click menu option that is displayed for attackable NPCs
+#### Excluded monsters
+  - Comma-separated list of NPC names or IDs to hide the right-click menu option for. Names are matched case-insensitively and must be singular (e.g. `Dust devil`, not `Dust devils`).
+#### Pinned sections
+  - Comma-separated keywords that pin matching sections to the top of every drops panel (e.g. `Tertiary` pins `Tertiary`, `Catacombs tertiary`, etc.). Matched case-insensitively as substrings. Each pinned section gets a 📌 icon indicator on its header. Clear the field to keep sections in wiki order
 ####  Disable Item links (List only)
   - Disables links to OSRS Wiki pages for items in List view
 ####  Items per row (Grid only)
@@ -80,3 +88,10 @@ v1.1.4
 
 v1.1.5
 - Add price type option to display GE or HA price
+
+v1.2.0
+- Fix missing quantity values on perfect-kill drops where the wiki uses semicolon alternates like "25; 38" (#26, #36)
+- Add Lookup Drops to the right-click menu on pickpocketable NPCs (#43)
+- Add "Excluded monsters" config option for a comma-separated list of NPC names or IDs to hide the right-click menu on (#28)
+- Add "Pinned sections" config option to pin matching sections to the top of the drops panel, with a pinned icon indicator on each pinned section's header (#34)
+- Add a filter popover in the toolbar to show/hide individual sections per lookup, with "Check all" and "Uncheck all" shortcuts.
