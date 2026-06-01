@@ -24,7 +24,7 @@ RuneLite plugin to quickly reference the monster drop tables from OSRS Wiki
 Config
 ------
 
-![config](https://i.imgur.com/yLHZlSD.png)
+![config](https://i.ibb.co.com/PzfBN34w/config.png)
 #### Default view option
   - Sets the default view option on plugin startup - List or Grid
 ####  Rarity 
@@ -95,7 +95,3 @@ v1.2.0
 - Add "Excluded monsters" config option for a comma-separated list of NPC names or IDs to hide the right-click menu on (#28)
 - Add "Pinned sections" config option to pin matching sections to the top of the drops panel, with a pinned icon indicator on each pinned section's header (#34)
 - Add a filter popover in the toolbar to show/hide individual sections per lookup, with "Check all" and "Uncheck all" shortcuts.
-
-v1.2.1
-- Fix Eldric the Ice King and Branda the Fire Queen showing each other's unique drops by scraping each titan's own wiki page instead of the combined Royal Titans page (#48)
-- Fix manual search returning no results for newer multi-word monster pages (e.g. "Eldric the Ice King") by resolving names through the wiki's case-insensitive Special:Lookup instead of a direct, case-sensitive page URL
