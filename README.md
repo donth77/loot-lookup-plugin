@@ -98,3 +98,4 @@ v1.2.0
 
 v1.2.1
 - Fix Eldric the Ice King and Branda the Fire Queen showing each other's unique drops by scraping each titan's own wiki page instead of the combined Royal Titans page (#48)
+- Fix manual search returning no results for newer multi-word monster pages (e.g. "Eldric the Ice King") by resolving names through the wiki's case-insensitive Special:Lookup instead of a direct, case-sensitive page URL

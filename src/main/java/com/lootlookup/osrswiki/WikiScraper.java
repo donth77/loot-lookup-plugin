@@ -26,12 +26,12 @@ public class WikiScraper {
             int monsterId) {
         CompletableFuture<DropTableSection[]> future = new CompletableFuture<>();
 
-        String url;
-        if (monsterId > -1) {
-            url = getWikiUrlWithId(monsterName, monsterId);
-        } else {
-            url = getWikiUrl(monsterName);
-        }
+        // Always resolve through Special:Lookup (even for a manual search with no
+        // NPC id). Special:Lookup matches the name case-insensitively, whereas a
+        // direct /w/ URL only auto-capitalizes the first letter. Newer multi-word
+        // pages such as "Eldric the Ice King" have no lowercase redirect, so the
+        // direct URL 404s while Special:Lookup still resolves them correctly.
+        String url = getWikiUrlWithId(monsterName, monsterId);
 
         log.info("Looking up drops for monster: '{}' (ID: {}) at URL: {}", monsterName, monsterId, url);
 
