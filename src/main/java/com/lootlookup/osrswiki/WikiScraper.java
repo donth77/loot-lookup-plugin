@@ -428,12 +428,15 @@ public class WikiScraper {
         if (monsterId > -1) {
             return getWikiUrlWithId(monsterName, monsterId);
         }
-        String sanitizedMonsterName = sanitizeName(monsterName);
         String anchorStr = "Drops";
         if (anchorText != null) {
             anchorStr = anchorText.replaceAll("\\s+", "_");
         }
-        return baseWikiUrl + sanitizedMonsterName + "#" + anchorStr;
+        // No NPC id (manual search): resolve through Special:Lookup, which matches
+        // the name case-insensitively. A direct /w/ URL only auto-capitalizes the
+        // first letter, so multi-word pages like "Eldric the Ice King" 404. The
+        // browser carries the #section fragment across the redirect to the page.
+        return getWikiUrlWithId(monsterName, monsterId) + "#" + anchorStr;
     }
 
     public static String sanitizeName(String name) {

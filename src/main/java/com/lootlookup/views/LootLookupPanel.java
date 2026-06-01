@@ -212,7 +212,7 @@ public class LootLookupPanel extends PluginPanel {
         actionsRight.add(Box.createRigidArea(new Dimension(6, 0)));
         gridBtnContainer.add(gridBtn, BorderLayout.CENTER);
         actionsRight.add(gridBtnContainer);
-        actionsRight.add(Box.createRigidArea(new Dimension(14, 0)));
+        actionsRight.add(Box.createRigidArea(new Dimension(6, 0)));
         filterBtnContainer.add(filterBtn, BorderLayout.CENTER);
         actionsRight.add(filterBtnContainer);
         updateFilterButtonIcon();
