@@ -417,8 +417,7 @@ public class WikiScraper {
         // the original NPC, matching the Dusk/Dawn pattern above.
         String monsterNameLC = monsterName.toLowerCase();
         if (monsterNameLC.equals("blood moon") || monsterNameLC.equals("blue moon")
-                || monsterNameLC.equals("eclipse moon")
-                || monsterNameLC.equals("eldric the ice king") || monsterNameLC.equals("branda the fire queen")) {
+                || monsterNameLC.equals("eclipse moon")) {
             id = -1;
         }
         // ---
@@ -449,10 +448,6 @@ public class WikiScraper {
         if (name.equalsIgnoreCase("blood moon") || name.equalsIgnoreCase("blue moon")
                 || name.equalsIgnoreCase("eclipse moon")) {
             name = "lunar chest";
-        }
-        // Royal Titans: Eldric and Branda standalone pages have no item-drops tables
-        if (name.equalsIgnoreCase("eldric the ice king") || name.equalsIgnoreCase("branda the fire queen")) {
-            name = "royal titans";
         }
         // DT2: Awakened variants don't have separate wiki pages; they share the base boss page
         if (name.toLowerCase().matches("^awakened\\s+(vardorvis|duke sucellus|(the\\s+)?leviathan|(the\\s+)?whisperer)$")) {

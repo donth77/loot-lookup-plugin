@@ -95,3 +95,6 @@ v1.2.0
 - Add "Excluded monsters" config option for a comma-separated list of NPC names or IDs to hide the right-click menu on (#28)
 - Add "Pinned sections" config option to pin matching sections to the top of the drops panel, with a pinned icon indicator on each pinned section's header (#34)
 - Add a filter popover in the toolbar to show/hide individual sections per lookup, with "Check all" and "Uncheck all" shortcuts.
+
+v1.2.1
+- Fix Eldric the Ice King and Branda the Fire Queen showing each other's unique drops by scraping each titan's own wiki page instead of the combined Royal Titans page (#48)

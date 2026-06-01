@@ -14,6 +14,12 @@ import java.util.concurrent.TimeUnit;
  * application to get a quick printout of the parsed drop table sections for a
  * handful of monsters. Useful for verifying scraper changes before doing a
  * full in-game integration test.
+ *
+ * <p>Pass names as program arguments to override the defaults. Append
+ * {@code #<npcId>} to a name (e.g. {@code "Eldric the Ice King#14149"}) to
+ * exercise the {@code Special:Lookup} path used in-game, which resolves the
+ * correct wiki page even when the page title's casing differs from the NPC
+ * name.
  */
 public class WikiScraperTest {
 
@@ -43,8 +49,15 @@ public class WikiScraperTest {
         System.out.println();
         System.out.println("==== " + name + " ====");
 
+        int id = -1;
+        int hashIdx = name.indexOf('#');
+        if (hashIdx > -1) {
+            id = Integer.parseInt(name.substring(hashIdx + 1));
+            name = name.substring(0, hashIdx);
+        }
+
         DropTableSection[] sections = WikiScraper
-                .getDropsByMonster(client, name, -1)
+                .getDropsByMonster(client, name, id)
                 .get(30, TimeUnit.SECONDS);
 
         if (sections.length == 0) {
