@@ -22,10 +22,16 @@ import static com.lootlookup.utils.Icons.noteImg;
 @Slf4j
 public class Util {
     public static void downloadImage(OkHttpClient okHttpClient, String url, Consumer<BufferedImage> callback) {
+        // Only advertise formats Java's built-in ImageIO can decode. The wiki now
+        // content-negotiates on Accept and returns WebP for .png URLs whenever the
+        // request advertises image/webp. ImageIO has no WebP reader, so ImageIO.read
+        // returns null, the callback never fires, and the item icon spinner spins
+        // forever (which also pins CPU). Omitting image/webp makes the wiki fall
+        // back to PNG. See https://github.com/donth77/loot-lookup-plugin/issues/50
         Request request = new Request.Builder()
             .url(url)
             .header("User-Agent", Constants.USER_AGENT)
-            .header("Accept", "image/webp,image/apng,image/*,*/*;q=0.8")
+            .header("Accept", "image/png,image/gif,image/jpeg,*/*;q=0.8")
             .header("Referer", "https://oldschool.runescape.wiki/")
             .build();
 
@@ -46,6 +52,12 @@ public class Util {
                         BufferedImage image = ImageIO.read(is);
                         if (image != null) {
                             SwingUtilities.invokeLater(() -> callback.accept(image));
+                        } else {
+                            // No registered ImageIO reader for the returned bytes
+                            // (e.g. an unexpected WebP response). Leaving this
+                            // unlogged makes the icon spin forever with no clue why.
+                            log.warn("Could not decode image (unsupported format?) from {} (content-type {})",
+                                    url, response.header("Content-Type"));
                         }
                     }
                 }
