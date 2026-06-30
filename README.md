@@ -68,8 +68,23 @@ Screenshots
 If you find any problems or have feedback, please feel free to submit an issue [here](https://github.com/donth77/loot-lookup-plugin/issues)
 
 ## Changelog
-v1.0
-- Initial release; added to Plugin Hub
+v1.2.0
+- Fix missing quantity values on perfect-kill drops where the wiki uses semicolon alternates like "25; 38" (#26, #36)
+- Add Lookup Drops to the right-click menu on pickpocketable NPCs (#43)
+- Add "Excluded monsters" config option for a comma-separated list of NPC names or IDs to hide the right-click menu on (#28)
+- Add "Pinned sections" config option to pin matching sections to the top of the drops panel, with a pinned icon indicator on each pinned section's header (#34)
+- Add a filter popover in the toolbar to show/hide individual sections per lookup, with "Check all" and "Uncheck all" shortcuts.
+
+v1.1.5
+- Add price type option to display GE or HA price
+
+v1.1.4
+- Display noted drops with a note image and include "(noted)" text in some cases
+
+v1.1.1 - v1.1.3
+- Fix parsing for some monsters with separate drop table tabs
+- Auto select tab corresponding to monster level on right click menu option
+- Look up monsters based on id on right click menu option
 
 v1.1.0
 - Improve parsing for OSRS Wiki pages
@@ -78,20 +93,8 @@ v1.1.0
 - Add config option to choose between 4 or 5 items in Grid view
 - Add config option for common color
 
-v1.1.1 - v1.1.3
-- Fix parsing for some monsters with separate drop table tabs
-- Auto select tab corresponding to monster level on right click menu option
-- Look up monsters based on id on right click menu option
+v1.0
+- Initial release; added to Plugin Hub
 
-v1.1.4
-- Display noted drops with a note image and include "(noted)" text in some cases
 
-v1.1.5
-- Add price type option to display GE or HA price
 
-v1.2.0
-- Fix missing quantity values on perfect-kill drops where the wiki uses semicolon alternates like "25; 38" (#26, #36)
-- Add Lookup Drops to the right-click menu on pickpocketable NPCs (#43)
-- Add "Excluded monsters" config option for a comma-separated list of NPC names or IDs to hide the right-click menu on (#28)
-- Add "Pinned sections" config option to pin matching sections to the top of the drops panel, with a pinned icon indicator on each pinned section's header (#34)
-- Add a filter popover in the toolbar to show/hide individual sections per lookup, with "Check all" and "Uncheck all" shortcuts.
