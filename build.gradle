@@ -32,3 +32,22 @@ tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 	options.release.set(11)
 }
+
+test {
+	useJUnit()
+
+	// Forward any -Dlootlookup.* flag from the Gradle CLI to the forked test JVM so
+	// the opt-in live wiki-structure check can be enabled with, e.g.:
+	//   ./gradlew test --tests "com.lootlookup.osrswiki.WikiStructureLiveTest" -Dlootlookup.livetest=true
+	System.properties.each { k, v ->
+		if (k.toString().startsWith('lootlookup.')) {
+			systemProperty k.toString(), v.toString()
+		}
+	}
+
+	testLogging {
+		events 'passed', 'skipped', 'failed'
+		showStandardStreams = true
+		exceptionFormat = 'full'
+	}
+}

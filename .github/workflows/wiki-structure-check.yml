@@ -1,0 +1,71 @@
+name: Wiki structure check
+
+# Daily "canary" that runs the plugin's real wiki scraper + icon-download path
+# against a curated set of live OSRS Wiki pages. Fails (and emails you) when the
+# wiki's HTML structure or image delivery changes in a way that breaks parsing or
+# item icons. See src/test/java/com/lootlookup/osrswiki/WikiStructureLiveTest.java.
+
+on:
+  schedule:
+    # Daily at 07:27 UTC (off the top of the hour to avoid Actions scheduling congestion)
+    - cron: '27 7 * * *'
+  workflow_dispatch: {}
+  push:
+    paths:
+      - 'src/main/java/com/lootlookup/osrswiki/**'
+      - 'src/main/java/com/lootlookup/utils/Util.java'
+      - 'src/main/java/com/lootlookup/utils/Constants.java'
+      - 'src/test/java/com/lootlookup/osrswiki/WikiStructureLiveTest.java'
+      - 'build.gradle'
+      - '.github/workflows/wiki-structure-check.yml'
+  pull_request:
+    paths:
+      - 'src/main/java/com/lootlookup/osrswiki/**'
+      - 'src/main/java/com/lootlookup/utils/Util.java'
+      - 'src/main/java/com/lootlookup/utils/Constants.java'
+      - 'src/test/java/com/lootlookup/osrswiki/WikiStructureLiveTest.java'
+      - 'build.gradle'
+      - '.github/workflows/wiki-structure-check.yml'
+
+permissions:
+  contents: read
+
+# Don't pile up overlapping runs for the same ref.
+concurrency:
+  group: wiki-structure-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  wiki-structure:
+    name: Live wiki scrape check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run live wiki structure + icon check
+        run: >-
+          ./gradlew --no-daemon --console=plain test
+          --tests "com.lootlookup.osrswiki.WikiStructureLiveTest"
+          -Dlootlookup.livetest=true
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wiki-structure-report
+          path: |
+            build/reports/tests/test/**
+            build/test-results/test/**
+          if-no-files-found: ignore
+          retention-days: 14
