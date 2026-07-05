@@ -1,5 +1,7 @@
 # Loot Lookup
 
+[![Wiki structure check](https://github.com/donth77/loot-lookup-plugin/actions/workflows/wiki-structure-check.yml/badge.svg?branch=master)](https://github.com/donth77/loot-lookup-plugin/actions/workflows/wiki-structure-check.yml)
+
 RuneLite plugin to quickly reference the monster drop tables from OSRS Wiki
 
 ## Features
