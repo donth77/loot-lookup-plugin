@@ -14,6 +14,12 @@ import static com.lootlookup.utils.Constants.*;
 
 @ConfigGroup(Constants.CONFIG_GROUP)
 public interface LootLookupConfig extends Config {
+    enum RightClickMenuOption {
+        ALWAYS_SHOW,
+        HOLD_SHIFT,
+        DISABLE
+    }
+
     @ConfigItem(
             position = 0,
             keyName = "defaultViewOption",
@@ -66,12 +72,12 @@ public interface LootLookupConfig extends Config {
 
     @ConfigItem(
             position = 5,
-            keyName = "disableMenuOption",
-            name = "Disable Right Click Menu option",
-            description = "Disable the right click menu option for monsters"
+            keyName = "rightClickMenuOption",
+            name = "Right click menu",
+            description = "Control when the right-click menu option is shown for monsters"
     )
-    default boolean disableMenuOption() {
-        return false;
+    default RightClickMenuOption rightClickMenuOption() {
+        return RightClickMenuOption.ALWAYS_SHOW;
     }
 
     @ConfigItem(
