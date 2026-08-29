@@ -123,7 +123,9 @@ public class LootLookupPlugin extends Plugin {
             }
         }
 
-        if (shouldShowLookup && !config.disableMenuOption() && !isMonsterExcluded(targetMonsterName, monsterId)) {
+        if (shouldShowLookup
+                && shouldShowRightClickMenuOption()
+                && !isMonsterExcluded(targetMonsterName, monsterId)) {
             MenuEntry entryToAppendOn = menuEntries[menuEntries.length - 1];
 
             int idx = Arrays.asList(menuEntries).indexOf(entryToAppendOn);
@@ -145,6 +147,18 @@ public class LootLookupPlugin extends Plugin {
                                 selectNavButton();
                                 panel.lookupMonsterDrops(finalTargetMonsterName, finalCombatLevel, finalMonsterId);
                             });
+        }
+    }
+
+    private boolean shouldShowRightClickMenuOption() {
+        switch (config.rightClickMenuOption()) {
+            case ALWAYS_SHOW:
+                return true;
+            case HOLD_SHIFT:
+                return client.isKeyPressed(KeyCode.KC_SHIFT);
+            case DISABLE:
+            default:
+                return false;
         }
     }
 
