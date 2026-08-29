@@ -29,6 +29,8 @@ public class LootLookupPlugin extends Plugin {
     @Inject
     private LootLookupConfig config;
     @Inject
+    private ConfigManager configManager;
+    @Inject
     public OkHttpClient okHttpClient;
 
     private LootLookupPanel panel;
@@ -36,6 +38,8 @@ public class LootLookupPlugin extends Plugin {
 
     @Override
     protected void startUp() {
+        migrateDisableMenuOption();
+
         panel = new LootLookupPanel(config, okHttpClient);
 
         navButton = NavigationButton.builder()
@@ -82,6 +86,12 @@ public class LootLookupPlugin extends Plugin {
      */
     @Subscribe
     public void onMenuOpened(MenuOpened event) {
+        // Bail before scanning the menu: under HOLD_SHIFT this is false for most
+        // right-clicks, and the scan below does an NPC lookup per menu entry.
+        if (!shouldShowRightClickMenuOption()) {
+            return;
+        }
+
         final var npcs = client.getTopLevelWorldView().npcs();
         MenuEntry[] menuEntries = event.getMenuEntries();
 
@@ -123,9 +133,7 @@ public class LootLookupPlugin extends Plugin {
             }
         }
 
-        if (shouldShowLookup
-                && shouldShowRightClickMenuOption()
-                && !isMonsterExcluded(targetMonsterName, monsterId)) {
+        if (shouldShowLookup && !isMonsterExcluded(targetMonsterName, monsterId)) {
             MenuEntry entryToAppendOn = menuEntries[menuEntries.length - 1];
 
             int idx = Arrays.asList(menuEntries).indexOf(entryToAppendOn);
@@ -148,6 +156,27 @@ public class LootLookupPlugin extends Plugin {
                                 panel.lookupMonsterDrops(finalTargetMonsterName, finalCombatLevel, finalMonsterId);
                             });
         }
+    }
+
+    /**
+     * "disableMenuOption" (boolean) was replaced by "rightClickMenuOption" (enum) in 1.2.3 (#51).
+     * Carry the old value over so users who had hidden the menu option keep it hidden.
+     */
+    private void migrateDisableMenuOption() {
+        String legacy = configManager.getConfiguration(Constants.CONFIG_GROUP, "disableMenuOption");
+        if (legacy == null) {
+            return;
+        }
+
+        // RuneLite writes config defaults before startUp() runs, so "rightClickMenuOption"
+        // is already set to ALWAYS_SHOW by now -- don't guard on it being absent. The legacy
+        // key only survives a single upgrade, so its value wins here.
+        configManager.setConfiguration(Constants.CONFIG_GROUP, "rightClickMenuOption",
+                Boolean.parseBoolean(legacy)
+                        ? LootLookupConfig.RightClickMenuOption.DISABLE
+                        : LootLookupConfig.RightClickMenuOption.ALWAYS_SHOW);
+
+        configManager.unsetConfiguration(Constants.CONFIG_GROUP, "disableMenuOption");
     }
 
     private boolean shouldShowRightClickMenuOption() {
