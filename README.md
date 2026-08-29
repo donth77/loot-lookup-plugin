@@ -17,7 +17,7 @@ RuneLite plugin to quickly reference the monster drop tables from OSRS Wiki
 - Choose between 4 or 5 rows in Grid view
 - Customize colors for rarity and prices
 - Multiple tabs for monsters with separate drop tables
-- Disable the right-click menu option
+- Show the right-click menu option always, only while holding Shift, or never
 - Pin selected sections (e.g. Uniques, Tertiary) to the top of every drops panel
 - Filter popover in the toolbar to show/hide individual sections per lookup
 - Exclude specific NPCs from the right-click menu option
@@ -26,7 +26,7 @@ RuneLite plugin to quickly reference the monster drop tables from OSRS Wiki
 Config
 ------
 
-![config](https://i.ibb.co.com/PzfBN34w/config.png)
+![config](images/config.png)
 #### Default view option
   - Sets the default view option on plugin startup - List or Grid
 ####  Rarity 
@@ -37,8 +37,11 @@ Config
   - Show/hide price value in the drop tables
 #### Price Type
   - Select price type for item: Grand Exchange or High Alch
-#### Disable Right Click Menu Option
-  - Hides the in-game right click menu option that is displayed for attackable NPCs
+#### Right click menu
+  - Controls when the in-game right click menu option is displayed for attackable NPCs
+    - `Always Show` - always add the option (default)
+    - `Hold Shift` - only add the option while Shift is held
+    - `Disable` - never add the option
 #### Excluded monsters
   - Comma-separated list of NPC names or IDs to hide the right-click menu option for. Names are matched case-insensitively and must be singular (e.g. `Dust devil`, not `Dust devils`).
 #### Pinned sections
@@ -60,16 +63,26 @@ Config
 
 Screenshots
 -----------
-![Giant Rat](https://i.imgur.com/kOpBmOo.png)
-![Alchemical Hydra - List](https://i.imgur.com/sArKJzz.png)
-![Alchemical Hydra - Grid](https://i.imgur.com/lngttYL.png)
-![Black demon - tabs](https://i.imgur.com/OlSsUHR.png)
+![Giant Rat](images/giant-rat.png)
+![Alchemical Hydra - List](images/alchemical-hydra-list.png)
+![Alchemical Hydra - Grid](images/alchemical-hydra-grid.png)
+![Black demon - tabs](images/black-demon-tabs.png)
 
 ## Issues
 
 If you find any problems or have feedback, please feel free to submit an issue [here](https://github.com/donth77/loot-lookup-plugin/issues)
 
 ## Changelog
+v1.2.3
+- Add "Right click menu" config option to show the Lookup Drops entry always, only while holding Shift, or never (#13, #51)
+
+v1.2.2
+- Fix item icons never loading by excluding WebP from the Accept header (#50)
+- Resolve monster lookups via Special:Lookup so manual search works (#48)
+
+v1.2.1
+- Fix Royal Titans drops by scraping each titan's own page (#48)
+
 v1.2.0
 - Fix missing quantity values on perfect-kill drops where the wiki uses semicolon alternates like "25; 38" (#26, #36)
 - Add Lookup Drops to the right-click menu on pickpocketable NPCs (#43)
