@@ -10,6 +10,7 @@ import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
+import net.runelite.client.util.LinkBrowser;
 import okhttp3.OkHttpClient;
 
 import javax.swing.*;
@@ -18,7 +19,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.net.URL;
 
 @Slf4j
 public class WikiItemPanel extends JPanel {
@@ -144,10 +144,7 @@ public class WikiItemPanel extends JPanel {
                 @Override
                 public void mouseClicked(MouseEvent evt) {
                     String wikiUrl = WikiScraper.getWikiUrl(item.getName());
-                    try {
-                        Desktop.getDesktop().browse(new URL(wikiUrl).toURI());
-                    } catch (Exception e) {
-                    }
+                    LinkBrowser.browse(wikiUrl);
                 }
 
                 @Override

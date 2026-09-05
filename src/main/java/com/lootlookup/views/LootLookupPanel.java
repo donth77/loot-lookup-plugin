@@ -9,6 +9,7 @@ import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.components.IconTextField;
 import net.runelite.client.ui.components.PluginErrorPanel;
+import net.runelite.client.util.LinkBrowser;
 import net.runelite.client.util.SwingUtil;
 import okhttp3.OkHttpClient;
 
@@ -19,7 +20,6 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.net.URL;
 
 import static com.lootlookup.utils.Icons.*;
 
@@ -178,10 +178,7 @@ public class LootLookupPanel extends PluginPanel {
         Util.showHandCursorOnHover(externalLinkBtn);
         externalLinkBtn.addActionListener((evt) -> {
             String wikiUrl = WikiScraper.getWikiUrlForDrops(monsterSearchField.getText(), tablePanel.getSelectedHeader(), targetMonsterId);
-            try {
-                Desktop.getDesktop().browse(new URL(wikiUrl).toURI());
-            } catch (Exception e) {
-            }
+            LinkBrowser.browse(wikiUrl);
         });
         externalLinkBtnContainer.setLayout(new BorderLayout());
 

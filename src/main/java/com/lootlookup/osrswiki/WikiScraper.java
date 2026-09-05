@@ -1,6 +1,8 @@
 package com.lootlookup.osrswiki;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
@@ -17,8 +19,9 @@ import org.jsoup.select.Elements;
 @Slf4j
 public class WikiScraper {
     private final static String baseUrl = "https://oldschool.runescape.wiki";
-    private final static String baseWikiUrl = baseUrl + "/w/";
-    private final static String baseWikiLookupUrl = baseWikiUrl + "Special:Lookup";
+    private final static URI baseUri = URI.create(baseUrl);
+    private final static String wikiPagePath = "/w/";
+    private final static String wikiLookupPath = wikiPagePath + "Special:Lookup";
 
     private static Document doc;
 
@@ -401,10 +404,14 @@ public class WikiScraper {
 
     public static String getWikiUrl(String itemOrMonsterName) {
         String sanitizedName = sanitizeName(itemOrMonsterName);
-        return baseWikiUrl + sanitizedName;
+        return buildWikiUrl(wikiPagePath + sanitizedName, null, null);
     }
 
     public static String getWikiUrlWithId(String monsterName, int id) {
+        return getWikiUrlWithId(monsterName, id, null);
+    }
+
+    private static String getWikiUrlWithId(String monsterName, int id, String fragment) {
         String sanitizedName = sanitizeName(monsterName);
         // --- Handle edge cases for specific pages ---
         if (id == 7851 || id == 7852) {
@@ -421,7 +428,7 @@ public class WikiScraper {
             id = -1;
         }
         // ---
-        return baseWikiLookupUrl + "?type=npc&id=" + String.valueOf(id) + "&name=" + sanitizedName;
+        return buildWikiUrl(wikiLookupPath, "type=npc&id=" + id + "&name=" + sanitizedName, fragment);
     }
 
     public static String getWikiUrlForDrops(String monsterName, String anchorText, int monsterId) {
@@ -436,7 +443,24 @@ public class WikiScraper {
         // the name case-insensitively. A direct /w/ URL only auto-capitalizes the
         // first letter, so multi-word pages like "Eldric the Ice King" 404. The
         // browser carries the #section fragment across the redirect to the page.
-        return getWikiUrlWithId(monsterName, monsterId) + "#" + anchorStr;
+        return getWikiUrlWithId(monsterName, monsterId, anchorStr);
+    }
+
+    /**
+     * Assembles a wiki URL via the multi-argument URI constructor, which percent-encodes
+     * any character that is illegal in its component (for example the double quotes in
+     * Gorak's "Full" Gorak drop table section header) while leaving legal characters such
+     * as underscores, apostrophes, parentheses and the query separators untouched.
+     * LinkBrowser.browse validates its argument with URI.create and throws on a malformed
+     * URL, so everything handed to it must already be well-formed.
+     */
+    private static String buildWikiUrl(String path, String query, String fragment) {
+        try {
+            return new URI(baseUri.getScheme(), baseUri.getHost(), path, query, fragment).toASCIIString();
+        } catch (URISyntaxException e) {
+            // Only reachable if the constant scheme or host above were malformed.
+            throw new IllegalStateException("Could not build wiki URL for path " + path, e);
+        }
     }
 
     public static String sanitizeName(String name) {
